@@ -1,0 +1,12 @@
+{
+  "timestamp": 1786885617.8356447,
+  "when": "2026-08-16 18:36:57",
+  "module": "main",
+  "exc_type": "ModuleNotFoundError",
+  "exc_message": "No module named 'state_engine.timeline'",
+  "diagnosis": "A required Python package isn't installed in this environment.",
+  "suggested_fix": "Run `pip install -r requirements.txt` (or reinstall the missing package specifically) and restart Gama.",
+  "matched_known_signature": true,
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 4, in <module>\n    import main\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\main.py\", line 279, in <module>\n    from voice import execution_narrator\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\voice\\execution_narrator.py\", line 58, in <module>\n    from state_engine.event_bus import Event, event_bus\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\state_engine\\__init__.py\", line 27, in <module>\n    from .manager import StateManager, StateSnapshot, state\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\state_engine\\manager.py\", line 48, in <module>\n    from .timeline import StateTimeline\nModuleNotFoundError: No module named 'state_engine.timeline'\n",
+  "extra": {}
+}

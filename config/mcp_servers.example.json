@@ -1,0 +1,71 @@
+{
+  "_comment": "Copy to mcp_servers.json and fill in. Each entry becomes one MCP server connection at startup (integrations/mcp/registry_bridge.py). Tools are namespaced as '{name}_{tool}' and registered into the same ToolRegistry as every local action module, so capability_manager/execution_queue/verification all apply to them unmodified.",
+
+  "servers": [
+    {
+      "_comment": "Direct local MCP server, launched as a subprocess over stdio. This is the pattern for most open-source MCP servers (github, filesystem, slack, etc) run via npx.",
+      "name": "github",
+      "kind": "stdio",
+      "enabled": false,
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "" },
+      "default_risk": "medium",
+      "category": "developer_tools",
+      "deny_tools": ["delete_repository"]
+    },
+    {
+      "_comment": "Composio-hosted toolkit over streamable-HTTP. Get the per-toolkit MCP URL from the Composio dashboard after connecting the account (see integrations/mcp/composio_bridge.py for details).",
+      "name": "gcal",
+      "kind": "composio",
+      "toolkit": "googlecalendar",
+      "enabled": false,
+      "url": "https://mcp.composio.dev/googlecalendar/REPLACE_ME",
+      "api_key": "",
+      "default_risk": "medium",
+      "category": "productivity",
+      "allow_tools": ["create_event", "list_events", "delete_event", "update_event"]
+    },
+    {
+      "name": "gmail",
+      "kind": "composio",
+      "toolkit": "gmail",
+      "enabled": false,
+      "url": "https://mcp.composio.dev/gmail/REPLACE_ME",
+      "api_key": "",
+      "default_risk": "medium",
+      "category": "productivity",
+      "deny_tools": ["delete_all_mail"]
+    },
+    {
+      "name": "notion",
+      "kind": "composio",
+      "toolkit": "notion",
+      "enabled": false,
+      "url": "https://mcp.composio.dev/notion/REPLACE_ME",
+      "api_key": "",
+      "default_risk": "low",
+      "category": "productivity"
+    },
+    {
+      "name": "slack",
+      "kind": "composio",
+      "toolkit": "slack",
+      "enabled": false,
+      "url": "https://mcp.composio.dev/slack/REPLACE_ME",
+      "api_key": "",
+      "default_risk": "medium",
+      "category": "communication"
+    },
+    {
+      "_comment": "Generic raw HTTP MCP endpoint (self-hosted or any provider besides Composio) — same shape, no Composio-specific auth headers.",
+      "name": "home_assistant",
+      "kind": "http",
+      "enabled": false,
+      "url": "http://homeassistant.local:8123/mcp",
+      "headers": { "Authorization": "Bearer REPLACE_ME_LONG_LIVED_TOKEN" },
+      "default_risk": "medium",
+      "category": "smart_home"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+# ============================================================
+# Gama - Windows AI Assistant by Vineet Machchal
+# ============================================================
+
+# Core AI
+sounddevice
+google-genai
+numpy
+
+# Web / automation
+duckduckgo-search
+playwright
+pyautogui
+pyperclip
+pygetwindow
+opencv-python
+# Hand gesture recognition (21-point landmarks). Optional — contour fallback
+# is used if MediaPipe is not installed. Install for accurate gesture mode.
+mediapipe>=0.10.30  # 0.10.30+ uses Tasks HandLandmarker API (solutions removed)
+mss
+send2trash
+requests>=2.28,<3
+pymupdf>=1.24
+pypdf>=4.0
+
+# Image handling
+pillow
+
+# System
+psutil
+rich>=13.0,<14
+
+# Input control
+pynput>=1.7.6,<2
+
+# Notifications
+win10toast
+
+# Voice model TTS — GAMA speaks with a single backend: Gemini's native
+# TTS model (gemini-3.1-flash-tts-preview), called via the same
+# google-genai client already required for Live/routing (see below).
+# Needs internet + the Gemini API key; set the voice with TTS_VOICE in
+# .env (e.g. Kore, Puck — see Gemini API docs for the full prebuilt
+# voice catalog). There is no offline fallback engine.
+
+
+# Windows-only (system automation, NOT for TTS)
+comtypes; sys_platform == "win32"
+pycaw; sys_platform == "win32"
+winsdk; sys_platform == "win32"
+pywinauto; sys_platform == "win32"
+pywin32>=306,<310; sys_platform == "win32"
+WMI; sys_platform == "win32"
+
+# Wake word (offline, no account needed)
+vosk>=0.3.45,<0.4
+# Optional lower-CPU backend (needs free Picovoice account + .ppn files):
+# pvporcupine>=3.0,<4
+
+# Crypto for credential store / secure storage
+cryptography>=41.0,<44
+
+# Local voice stack — 100% CPU/ONNX, zero PyTorch anywhere in the project.
+#   onnxruntime          -> Silero VAD (voice/vad.py)
+#   webrtc-audio-processing -> AEC3 + NS + AGC (voice/aec.py)
+# Modules fall back gracefully (VAD: energy-based trim in microphone.py;
+# AEC: passthrough) if optional model files are missing.
+onnxruntime>=1.17,<2.0
+fastembed>=0.3,<0.6           # semantic embeddings for memory/knowledge search (C3)
+
+# AEC Audio Processing Module — AEC3, noise suppression, AGC.
+# Enables true barge-in by cancelling Gama's own TTS from the mic input.
+# Prebuilt Windows wheels — no compiler or build tools needed.
+# Fails soft: Gama runs in passthrough mode if this package is absent.
+aec-audio-processing>=1.0
+
+# Offline AI reasoning — llama.cpp bindings (GGUF models, CPU-only, no PyTorch)
+# Download a GGUF model and set 'llama_model_path' in config/api_keys.json —
+# see core/llm_local.py for setup instructions.
+llama-cpp-python
+
+# Build
+
+# Knowledge Layer — optional, real-time incremental file indexing.
+# Without this, knowledge/watcher.py falls back to periodic scans only
+# (still works, just checks for changes on a schedule instead of instantly).
+
+# Calendar — Google Calendar API v3 via plain REST calls (actions/
+# calendar_action.py + actions/google_calendar_auth.py), synced to a
+# local offline .ics mirror (actions/ics_calendar.py +
+# actions/calendar_sync.py) so calendar reads/writes keep working
+# with no internet or no Google login.
+icalendar>=6.0,<7
+# Uses the
+# `requests` dependency already listed above — no separate SDK needed.
+# Setup: python scripts/google_calendar_login.py (see that script's
+# docstring). Optional: Gama runs fine without it, calendar_action
+# just reports "not connected" until you do the one-time login.
+# React HUD web bridge
+pydantic>=2.0
+websockets>=12.0
+
+# Conversation-log display (optional offline/online STT for HUD)
+SpeechRecognition>=3.10,<4
+# pocketsphinx  # optional offline backend for SpeechRecognition
+
+# --- Cleanup note ---
+# Removed unused: pywhatkit, youtube-transcript-api, pywhispercpp,
+# watchdog, fastapi, uvicorn, pyinstaller (use separate build env).
+# Removed feature stacks: Piper TTS, local Whisper STT, speaker verification,
+# speech stylers, full echo-rejection stack, CAD, daily_briefing.

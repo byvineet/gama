@@ -1,0 +1,35 @@
+{
+  "_comment": "Copy this file to wake_word.json and edit. See wake_word/README.md.",
+
+  "enabled": true,
+  "backend": "vosk",
+
+  "wake_phrase": "wake up gama",
+  "wake_phrases": ["gama", "wake up gama"],
+  "interrupt_words": [],
+
+  "sensitivity": 0.55,
+  "cooldown_seconds": 1.5,
+  "auto_sleep_seconds": 300,
+  "greet_on_wake": true,
+
+  "wake_confirm_silence_ms": 900,
+  "wake_confirm_rms_threshold": 500,
+
+  "_clap_wake_comment": "Lightweight DSP double-clap wake (no ML model). Runs on the same shared mic frames as the wake word — no extra audio device/CPU. Two claps 150-500ms apart wake Gama.",
+  "clap_wake_enabled": true,
+  "clap_sensitivity": 0.5,
+  "clap_min_gap_ms": 150,
+  "clap_max_gap_ms": 500,
+
+  "vosk": {
+    "model_path": "models/vosk-model-small-en-us-0.15"
+  },
+
+  "porcupine": {
+    "access_key": "",
+    "keywords": [
+      { "label": "wake", "path": "models/porcupine/wake-up-gama_en_windows.ppn", "sensitivity": 0.6 }
+    ]
+  }
+}

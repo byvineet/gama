@@ -1,0 +1,12 @@
+{
+  "active": "alpha",
+  "projects": {
+    "alpha": {
+      "name": "Alpha",
+      "created_ts": 1786251845.7075226,
+      "checkins": 0,
+      "last_active_ts": 1786251845.7075408
+    }
+  },
+  "dnd_until": null
+}

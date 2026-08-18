@@ -1,0 +1,12 @@
+{
+  "timestamp": 1786452945.170141,
+  "when": "2026-08-11 18:25:45",
+  "module": "main",
+  "exc_type": "SyntaxError",
+  "exc_message": "invalid syntax (audio_coordinator.py, line 83)",
+  "diagnosis": null,
+  "suggested_fix": null,
+  "matched_known_signature": false,
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\main.py\", line 274, in <module>\n    from voice.audio_coordinator import get_coordinator as get_audio_coordinator\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\voice\\audio_coordinator.py\", line 83\n    self.pass  # echo_guard removed\n         ^^^^\nSyntaxError: invalid syntax\n",
+  "extra": {}
+}

@@ -1,0 +1,18 @@
+{
+  "_comment": "FunctionGemma 270M — primary local tool calling for Gama. See core/functiongemma_router.py. Copy to functiongemma.json to customize.",
+
+  "enabled": true,
+  "_enabled_comment": "When true (and torch+transformers+model available), FunctionGemma is the primary local tool router on verified transcripts. When false or model missing, falls back to regex fast-intent → Flash-Lite → Gemini Live.",
+
+  "model_path": "",
+  "_model_path_comment": "Empty = auto-resolve: models/functiongemma_ft/ → models/functiongemma-270m-it/ → google/functiongemma-270m-it on Hugging Face Hub. Set to a local folder with config.json for offline use.",
+
+  "device": "",
+  "_device_comment": "Empty = auto (cuda → mps → cpu). Examples: \"cpu\", \"cuda\", \"cuda:0\".",
+
+  "max_new_tokens": 128,
+  "_max_new_tokens_comment": "Max tokens for a single tool-call generation. 64–128 is enough for name+args.",
+
+  "preload_on_startup": true,
+  "_preload_on_startup_comment": "Warm the model in the background startup preloader so the first command avoids cold-load latency."
+}

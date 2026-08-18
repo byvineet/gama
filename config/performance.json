@@ -1,0 +1,4 @@
+{
+  "mode": "fast",
+  "comment": "fast | balanced | full — see utils/performance_mode.py. Override with env GAMA_PERF_MODE."
+}

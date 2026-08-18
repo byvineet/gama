@@ -1,0 +1,4 @@
+{
+  "mode": "balanced",
+  "comment": "fast = ADA-like low latency (AEC off, continuous listen, short replies). balanced = default. full = max always-on intelligence."
+}

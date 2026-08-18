@@ -1,0 +1,26 @@
+{
+  "_comment": "GAMA response backend. See voice/piper_tts.py and core/response_backend.py.",
+
+  "backend": "gemini_live",
+  "_backend_comment": "\"gemini_live\" (default) = cloud reasoning + cloud voice, full-duplex, exactly as before. \"local\" = fully offline jarvis-main-style pipeline: local Whisper STT + local GGUF LLM (core/llm_local.py) + local Piper TTS voice (voice/piper_tts.py). No Gemini session is opened at all in \"local\" mode, even if internet/API key are available.",
+
+  "piper": {
+    "_comment": "Any voice name from https://huggingface.co/rhasspy/piper-voices — auto-downloaded on first use.",
+    "voice": "en_US-lessac-medium",
+    "model_path": "",
+    "_model_path_comment": "Explicit .onnx path override. Leave blank to auto-resolve/download from 'voice' into models/piper/.",
+    "speaker": null,
+    "length_scale": 1.0,
+    "_length_scale_comment": "Speaking rate multiplier. >1.0 slower, <1.0 faster.",
+    "noise_scale": 0.667,
+    "noise_w": 0.8,
+    "sentence_silence": 0.2
+  },
+
+  "local_llm": {
+    "_comment": "Reuses the GGUF model already configured for the local intent judge (config/api_keys.json 'llama_model_path') unless overridden here.",
+    "model_path": "",
+    "max_tokens": 256,
+    "temperature": 0.65
+  }
+}

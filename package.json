@@ -1,0 +1,11 @@
+{
+  "name": "gama-desktop",
+  "private": true,
+  "version": "2.0.0",
+  "description": "G.A.M.A — Python backend + React web UI",
+  "scripts": {
+    "dev": "npm run dev --prefix web_ui",
+    "build:ui": "npm run build --prefix web_ui",
+    "release": "build_release.bat"
+  }
+}

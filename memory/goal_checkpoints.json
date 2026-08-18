@@ -1,0 +1,10 @@
+{
+  "test_goal_1": {
+    "step_index": 1,
+    "total_steps": 5,
+    "data": {
+      "status": "in_progress"
+    },
+    "updated_at": 1785399180.7596252
+  }
+}

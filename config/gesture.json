@@ -1,0 +1,15 @@
+{
+  "_comment": "Nexus hand-gesture control only. Pinch+move scroll, swipe tabs, palm+move windows, right-hand rotate volume, left-hand rotate brightness.",
+  "enabled_by_default": false,
+  "mode": "nexus",
+  "camera_index": 0,
+  "cooldown_sec": 0.55,
+  "scroll_clicks": 3,
+  "width": 640,
+  "height": 360,
+  "target_fps": 24,
+  "detect_every": 1,
+  "pointer_smoothing": 0.55,
+  "pointer_margin": 0.03,
+  "mapping": {}
+}

@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "buffer_duration_sec": 120.0,
+  "min_confidence": 0.3,
+  "no_speech_threshold": 0.5,
+  "whisper_model": "base"
+}

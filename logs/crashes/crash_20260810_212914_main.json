@@ -1,0 +1,12 @@
+{
+  "timestamp": 1786377554.5661137,
+  "when": "2026-08-10 21:29:14",
+  "module": "main",
+  "exc_type": "SyntaxError",
+  "exc_message": "':' expected after dictionary key (tool_declarations.py, line 263)",
+  "diagnosis": null,
+  "suggested_fix": null,
+  "matched_known_signature": false,
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\main.py\", line 273, in <module>\n    from core.tool_declarations import PROCESSING_ACK_LINES, TOOL_DECLARATIONS, get_filtered_declarations\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\core\\tool_declarations.py\", line 263\n    {\"name\": \"routines\", \"behavior\": \"NON_BLOCKING\", \"description\": \"User-defined routines/macros. Actions: list, save (name, steps=[{tool,args}...], description), run (name), delete (name), get (name). Example: save name='study mode' with steps to open VS Code, mute, play music.\",\n                                                                                                                                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^\nSyntaxError: ':' expected after dictionary key\n",
+  "extra": {}
+}

@@ -1,0 +1,24 @@
+# Secrets — never commit real keys
+.env
+config/api_keys.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.zip
+
+# Node
+web_ui/node_modules/
+
+# Logs & runtime data
+logs/*.log
+memory/long_term.json
+
+# Vosk / Porcupine models (large, downloaded separately)
+models/

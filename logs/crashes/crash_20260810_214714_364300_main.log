@@ -1,0 +1,21 @@
+GAMA MAIN CRASH
+Traceback (most recent call last):
+  File "C:\Users\notde\Desktop\Gama 2.0\main.py", line 1391, in _main_web_only
+    asyncio.run(assistant.run())
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "C:\Users\notde\Desktop\Gama 2.0\main.py", line 1171, in run
+    return await self.live_session.run()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\notde\Desktop\Gama 2.0\core\live_session.py", line 586, in run
+    api_key = _get_api_key()
+              ^^^^^^^^^^^^
+NameError: name '_get_api_key' is not defined

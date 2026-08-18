@@ -1,0 +1,75 @@
+{
+  "monday": [
+    {
+      "start": "4:00 PM",
+      "end": "6:00 PM",
+      "subject": "Chemistry"
+    },
+    {
+      "start": "6:15 PM",
+      "end": "8:00 PM",
+      "subject": "Mathematics"
+    }
+  ],
+  "tuesday": [
+    {
+      "start": "4:00 PM",
+      "end": "6:00 PM",
+      "subject": "Physics"
+    },
+    {
+      "start": "6:15 PM",
+      "end": "8:00 PM",
+      "subject": "Mathematics"
+    }
+  ],
+  "wednesday": [
+    {
+      "start": "4:00 PM",
+      "end": "6:00 PM",
+      "subject": "Mathematics"
+    },
+    {
+      "start": "6:15 PM",
+      "end": "8:00 PM",
+      "subject": "Physics"
+    }
+  ],
+  "thursday": [
+    {
+      "start": "4:00 PM",
+      "end": "6:00 PM",
+      "subject": "Mathematics"
+    },
+    {
+      "start": "6:15 PM",
+      "end": "8:00 PM",
+      "subject": "Physics"
+    }
+  ],
+  "friday": [
+    {
+      "start": "4:00 PM",
+      "end": "6:00 PM",
+      "subject": "Chemistry"
+    },
+    {
+      "start": "6:15 PM",
+      "end": "8:00 PM",
+      "subject": "Physics"
+    }
+  ],
+  "saturday": [
+    {
+      "start": "4:00 PM",
+      "end": "6:00 PM",
+      "subject": "Chemistry"
+    },
+    {
+      "start": "6:15 PM",
+      "end": "8:00 PM",
+      "subject": "Physics"
+    }
+  ],
+  "sunday": []
+}

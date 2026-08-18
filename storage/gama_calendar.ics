@@ -1,0 +1,480 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Gama//Offline Calendar//EN
+BEGIN:VEVENT
+SUMMARY:Independence Day
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+UID:3a2a627f-8703-498a-9a59-53daf2cbc678
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20260815_bp8sbcp5n07g8d4813k4pt43hg
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Onam
+DTSTART;VALUE=DATE:20260826
+DTEND;VALUE=DATE:20260827
+UID:9e930e68-4989-4faf-b943-c75bed5b404a
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20260826_1mmh4dpom1l5e0ck33tae3uaas
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Milad un-Nabi (tentative)
+DTSTART;VALUE=DATE:20260826
+DTEND;VALUE=DATE:20260827
+UID:2ba3a2ab-cdd2-4756-8f42-ea0591951a57
+DESCRIPTION:Public holiday\nDate is tentative and may change.
+X-GAMA-GCAL-ID:20260826_d19kq16070jlbf62b32hcle914
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Raksha Bandhan
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+UID:517e843b-33e5-46cc-9721-1c5f31430216
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20260828_fbq81giv9tij730f5flr5hpuac
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Janmashtami
+DTSTART;VALUE=DATE:20260904
+DTEND;VALUE=DATE:20260905
+UID:32f67138-620a-4d16-ace1-0340e73082f1
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20260904_b4nrrbc7ikd5oln39o9v7o3gno
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Janmashtami (Smarta)
+DTSTART;VALUE=DATE:20260904
+DTEND;VALUE=DATE:20260905
+UID:f4140da3-e657-4a69-9f29-b87144d62434
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20260904_lfnd1ca468kl4ph58frfpimgks
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Ganesh Chaturthi
+DTSTART;VALUE=DATE:20260914
+DTEND;VALUE=DATE:20260915
+UID:5e43dd53-ecae-43f1-bcf9-4b3e7da76d2a
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20260914_npbd30qfortdbcjot9u8ndac08
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Mahatma Gandhi Jayanti
+DTSTART;VALUE=DATE:20261002
+DTEND;VALUE=DATE:20261003
+UID:931d077c-47b0-4d1f-bc43-0faf620c7077
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20261002_arp6pgnu512c88v0jrqns43vu8
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:First Day of Sharad Navratri
+DTSTART;VALUE=DATE:20261011
+DTEND;VALUE=DATE:20261012
+UID:143764da-590a-47d2-bef7-a4338d278a62
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261011_1icioln142judlkcfbha3pjdpg
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:First Day of Durga Puja Festivities
+DTSTART;VALUE=DATE:20261017
+DTEND;VALUE=DATE:20261018
+UID:5ae2df70-ec67-4ac9-805c-64743b87ac3b
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261017_h1f2v84af2e4gol35pkkjbgdas
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Maha Saptami
+DTSTART;VALUE=DATE:20261018
+DTEND;VALUE=DATE:20261019
+UID:e9fd1613-5f76-440f-b3c3-6fe3e946e6b9
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261018_up7a27s35gkelsr1cbevbp5j00
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Maha Ashtami
+DTSTART;VALUE=DATE:20261019
+DTEND;VALUE=DATE:20261020
+UID:4af00504-73e7-4d7a-a56f-f82a195c993c
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261019_klpqb6i8didhk1i71405fe56pc
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Dussehra
+DTSTART;VALUE=DATE:20261020
+DTEND;VALUE=DATE:20261021
+UID:df49eba7-cefc-421f-b5c3-960b8aba0b63
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20261020_fjp0rb9o3n2re0oa89qu4f4mso
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Maharishi Valmiki Jayanti
+DTSTART;VALUE=DATE:20261026
+DTEND;VALUE=DATE:20261027
+UID:1826c0c9-a428-42a3-9219-d5bd712c1a48
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261026_dpgstdjm2kua0c3ti4aqmnctbo
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Karaka Chaturthi
+DTSTART;VALUE=DATE:20261029
+DTEND;VALUE=DATE:20261030
+UID:65412cba-222e-4b21-8f6b-2cef1bbc1ae2
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261029_du0vmm1a7d862bc71ro9a82uqc
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Diwali/Deepavali
+DTSTART;VALUE=DATE:20261108
+DTEND;VALUE=DATE:20261109
+UID:45d0a2db-b4af-40b1-808a-281955c2e096
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20261108_o3aevviv105saebf47ptcda14o
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Naraka Chaturdasi
+DTSTART;VALUE=DATE:20261108
+DTEND;VALUE=DATE:20261109
+UID:e656dc6c-ed86-4b0a-9f1e-046d08cee816
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261108_sj6r4c25h02j6iuvqms4907fmo
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Govardhan Puja
+DTSTART;VALUE=DATE:20261109
+DTEND;VALUE=DATE:20261110
+UID:51e1d70f-889d-42d9-b581-5296c21de0af
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261109_9ucn1jr1v0qkbmh1p31aka5qag
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bhai Duj
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+UID:d574aeb2-a549-4a8d-8ea3-9f486644163f
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261111_lem4nlhmh9ka68hh6m99dopvc8
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chhat Puja (Pratihar Sashthi/Surya Sashthi)
+DTSTART;VALUE=DATE:20261115
+DTEND;VALUE=DATE:20261116
+UID:7f646129-48c6-4cf6-8268-05620fa8e184
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261115_8065pjqbbhi1kmd7493liod1ag
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Guru Nanak Jayanti
+DTSTART;VALUE=DATE:20261124
+DTEND;VALUE=DATE:20261125
+UID:ac6999f2-a3f9-475f-96d2-a022d2580f59
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20261124_njcklmiqk3v344nv88r1mo6ink
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Guru Tegh Bahadur's Martyrdom Day
+DTSTART;VALUE=DATE:20261124
+DTEND;VALUE=DATE:20261125
+UID:4faece2f-b059-486a-9512-30fc97bbc6e8
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261124_pv7p2h23ej6ekau6c5hc4688t8
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Hazarat Ali's Birthday
+DTSTART;VALUE=DATE:20261223
+DTEND;VALUE=DATE:20261224
+UID:cfb2a067-d5d5-4da5-b49c-5f48aab61345
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261223_qaarbvg90v76dead87qu17kob4
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Christmas Eve
+DTSTART;VALUE=DATE:20261224
+DTEND;VALUE=DATE:20261225
+UID:d35aa07b-4604-405b-b142-b73858536324
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20261224_neqbcde26rglcalt462982nqi0
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Christmas
+DTSTART;VALUE=DATE:20261225
+DTEND;VALUE=DATE:20261226
+UID:1467ff90-408b-47a0-b570-2f237c3187a9
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20261225_j7t84gf437vtue4ck75hvd56l0
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:New Year's Day
+DTSTART;VALUE=DATE:20270101
+DTEND;VALUE=DATE:20270102
+UID:47e40c9c-1589-4fe8-ba48-7d20b78d1e3d
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270101_p8d44frnphvj5avi6l2qrov1ns
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Pongal
+DTSTART;VALUE=DATE:20270115
+DTEND;VALUE=DATE:20270116
+UID:34de702c-ab51-406a-aa02-658e0a903be8
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270115_9a1onrqb772qv45gcvnpsqu4n8
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Makar Sankranti
+DTSTART;VALUE=DATE:20270115
+DTEND;VALUE=DATE:20270116
+UID:01e6616f-4125-4007-a5fe-16f358c85271
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270115_j28c0dr7948ukondfdeaihoti8
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Republic Day
+DTSTART;VALUE=DATE:20270126
+DTEND;VALUE=DATE:20270127
+UID:0d45e2d7-839d-4d89-ac17-1ca005ade19d
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20270126_3ueccaeqtpio3llclsnnb33974
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Ramadan Start (tentative)
+DTSTART;VALUE=DATE:20270209
+DTEND;VALUE=DATE:20270210
+UID:6fcb5059-db50-468f-b930-abd641156fef
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India\nDate is tentative and may change.
+X-GAMA-GCAL-ID:20270209_aahi2e9puucb8ul8rps6555r00
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vasant Panchami
+DTSTART;VALUE=DATE:20270211
+DTEND;VALUE=DATE:20270212
+UID:4939560c-6dd9-4ebf-b585-2b5bd71f53bd
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270211_kl0ecbgk48end4m29v4r25b6bo
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Shivaji Jayanti
+DTSTART;VALUE=DATE:20270219
+DTEND;VALUE=DATE:20270220
+UID:895ef399-1636-42d1-87cc-5eaf298bfdc6
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270219_rnr5nqkt9mtea6h7f84nltrum0
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Maha Shivaratri
+DTSTART;VALUE=DATE:20270306
+DTEND;VALUE=DATE:20270307
+UID:50a05452-ee89-44f3-9365-0e3719a575cf
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20270306_mqridg07o1pc9u37d5lai6sc1g
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Ramzan Id (tentative)
+DTSTART;VALUE=DATE:20270310
+DTEND;VALUE=DATE:20270311
+UID:f90900f3-ef2e-486b-a967-b3e35c2fb096
+DESCRIPTION:Public holiday\nDate is tentative and may change.
+X-GAMA-GCAL-ID:20270310_2h899vh3h8hdotv5gea8gerksk
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Holi
+DTSTART;VALUE=DATE:20270322
+DTEND;VALUE=DATE:20270323
+UID:74c5bee0-0763-4455-a336-19a737178865
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20270322_keu32sqpm0ak2d82bo6grqe3pc
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Good Friday
+DTSTART;VALUE=DATE:20270326
+DTEND;VALUE=DATE:20270327
+UID:f64f521f-b24e-40f8-875a-228c6145436a
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20270326_9qji2l8o2g5qh4a8ma1jr9ifvs
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Ugadi
+DTSTART;VALUE=DATE:20270407
+DTEND;VALUE=DATE:20270408
+UID:18243ed1-fbce-4419-9566-0680b730a1e6
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270407_0niv7s3g935532uc814dutiufk
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Gudi Padwa
+DTSTART;VALUE=DATE:20270407
+DTEND;VALUE=DATE:20270408
+UID:2e3ec044-f0bb-460d-acc7-44eceabeda15
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270407_6bpid36leuifhsqbeffreilct4
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Ambedkar Jayanti
+DTSTART;VALUE=DATE:20270414
+DTEND;VALUE=DATE:20270415
+UID:95a65e25-82e3-425a-ae92-813d8f3e66f4
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270414_9uitr4s5kiavjvj3r3h3n98nq8
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Rama Navami
+DTSTART;VALUE=DATE:20270415
+DTEND;VALUE=DATE:20270416
+UID:ee483106-c864-4d6c-84b9-8970e37d4c08
+DESCRIPTION:Public holiday
+X-GAMA-GCAL-ID:20270415_rbgf7u7h9obbudbgej9rh3bmt0
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bakrid (tentative)
+DTSTART;VALUE=DATE:20270517
+DTEND;VALUE=DATE:20270518
+UID:7ef78560-e8f4-4182-80ec-ee3c27e8958b
+DESCRIPTION:Public holiday\nDate is tentative and may change.
+X-GAMA-GCAL-ID:20270517_p71ep4ru9258ap90ok6blfjcd0
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Muharram/Ashura (tentative)
+DTSTART;VALUE=DATE:20270616
+DTEND;VALUE=DATE:20270617
+UID:a9eabc84-bce3-45e9-8573-9d5b7dab9865
+DESCRIPTION:Public holiday\nDate is tentative and may change.
+X-GAMA-GCAL-ID:20270616_3k20sckpm0fo1jsd9jrmh5ljj4
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Rath Yatra
+DTSTART;VALUE=DATE:20270705
+DTEND;VALUE=DATE:20270706
+DTSTAMP:2026-08-02 09:14:42.886125+00:00
+UID:32ae8e0f-291c-41a0-b617-93bb4f8f14cd
+DESCRIPTION:Observance\nTo hide observances\, go to Google Calendar Settin
+ gs > Holidays in India
+X-GAMA-GCAL-ID:20270705_ja2qu57j44l38sfotieg8qse9g
+X-GAMA-SOURCE:google_holiday
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vineet's Birthday
+DTSTART;TZID="UTC+05:30":20261018T000000
+DTEND;TZID="UTC+05:30":20261018T235959
+UID:8be98a33-1c27-46fc-97cb-21d56a68e1a0
+X-GAMA-GCAL-ID:pkrq90r3knvtt8drittoic80pk
+X-GAMA-SOURCE:google_primary
+X-GAMA-SYNC:synced
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vineet's Birthday
+DTSTART;TZID="UTC+05:30":20261018T090000
+DTEND;TZID="UTC+05:30":20261018T100000
+UID:db1bb762-5985-41a3-859c-6b1b139584a6
+X-GAMA-GCAL-ID:nfv4pnd4udkeifr8335lopsk08
+X-GAMA-SOURCE:google_primary
+X-GAMA-SYNC:synced
+END:VEVENT
+END:VCALENDAR

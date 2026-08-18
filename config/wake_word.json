@@ -1,0 +1,35 @@
+{
+  "_comment": "GAMA wake word config. See wake_word/README.md for details.",
+
+  "enabled": true,
+  "backend": "vosk",
+
+  "wake_phrase": "gama",
+  "wake_phrases": ["gama", "wake up gama"],
+  "interrupt_words": [],
+
+  "sensitivity": 0.55,
+  "cooldown_seconds": 1.5,
+  "auto_sleep_seconds": 300,
+  "greet_on_wake": true,
+
+  "wake_confirm_silence_ms": 0,
+  "_wake_confirm_rms_threshold_comment": "No longer used for the wake/no-wake decision (that's now speech-content-based, see wake_word/engines/vosk_engine.py) — kept only for backward-compatible config loading.",
+  "wake_confirm_rms_threshold": 500,
+
+  "clap_wake_enabled": true,
+  "clap_sensitivity": 0.3,
+  "clap_min_gap_ms": 120,
+  "clap_max_gap_ms": 500,
+
+  "vosk": {
+    "model_path": "models/vosk-model-small-en-us-0.15"
+  },
+
+  "porcupine": {
+    "access_key": "",
+    "keywords": [
+      { "label": "wake", "path": "models/porcupine/wake-up-gama_en_windows.ppn", "sensitivity": 0.6 }
+    ]
+  }
+}
