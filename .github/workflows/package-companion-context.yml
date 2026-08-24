@@ -1,0 +1,31 @@
+name: Package Gama Companion Context
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'gama-companion-context/**'
+      - '.github/workflows/package-companion-context.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create ZIP
+        run: |
+          mkdir -p dist
+          zip -r dist/gama-companion-context.zip gama-companion-context
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gama-companion-context
+          path: dist/gama-companion-context.zip
+          if-no-files-found: error
