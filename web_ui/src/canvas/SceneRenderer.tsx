@@ -16,6 +16,8 @@ import { ImageView } from "./components/ImageView";
 import { IdleHome } from "./components/IdleHome";
 import { SVGRenderer } from "./custom/SVGRenderer";
 import { ModelView } from "./components/ModelView";
+import { CodeView } from "./components/CodeView";
+import { WorkflowView } from "./components/WorkflowView";
 import { enterClass } from "./animation/transitions";
 
 type Ctx = {
@@ -113,6 +115,10 @@ export function SceneRenderer({ scene, ctx }: { scene: ActiveScene; ctx: Ctx }) 
         return <Confirm data={data} onConfirm={ctx.onConfirm} />;
       case "image":
         return <ImageView data={data} />;
+      case "code":
+        return <CodeView data={data} />;
+      case "workflow":
+        return <WorkflowView data={data} />;
       case "custom_svg":
         return <SVGRenderer data={data} />;
       case "model_3d":

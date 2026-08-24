@@ -64,12 +64,10 @@ _SENSITIVE_TOOLS: dict[str, "bool | set[str]"] = {
 _DESTRUCTIVE_TOOLS: dict[str, "bool | set[str]"] = {
     "computer_settings": {
         "shutdown", "restart", "reboot", "sleep", "hibernate",
-        "lock", "sign_out", "log_off", "format", "disk_cleanup",
-        "system_config", "change_settings",
+        "lock", "sign_out", "log_off",
     },
-    "file_controller": {"delete", "empty_recycle_bin", "format"},
+    "file_controller": {"delete", "empty_recycle_bin"},
     "process_manager": {"kill", "kill_all", "terminate"},
-    "game_updater": {"install", "uninstall"},
     "startup_manager": {"add", "remove", "enable", "disable"},
     "computer_agent": set(),  # covered by True above at SENSITIVE; escalated below by keyword
     "advanced_automation": True,   # automation scripts that modify files
@@ -77,7 +75,7 @@ _DESTRUCTIVE_TOOLS: dict[str, "bool | set[str]"] = {
 
 # NORMAL tools — no verification, but every call is logged (audit trail).
 _NORMAL_TOOLS = {
-    "open_app", "browser_control", "web_search", "edge_search",
+    "open_app", "browser_control", "edge_search",
     "youtube_video", "computer_settings",  # (non-destructive actions fall through here)
     "mouse_actions", "keyboard_actions", "downloader", "screen_recorder",
     "screen_processor", "clipboard", "notes", "reminder", "class_schedule",

@@ -652,6 +652,27 @@ def display_stage(action: str = "reminders", **kwargs) -> str:
             recording=kwargs.get("recording"),
         )
 
+    if action in ("code", "show_code", "snippet", "script"):
+        return _show_code(
+            code=str(kwargs.get("code") or kwargs.get("content") or kwargs.get("text") or ""),
+            language=str(kwargs.get("language") or kwargs.get("lang") or "python"),
+            title=str(kwargs.get("title") or kwargs.get("filename") or "Code Snippet"),
+            explanation=str(kwargs.get("explanation") or kwargs.get("description") or ""),
+            output=str(kwargs.get("output") or kwargs.get("result") or ""),
+        )
+
+    if action in ("workflow", "show_workflow", "pipeline", "organize_view"):
+        steps = kwargs.get("steps") or kwargs.get("items") or []
+        if isinstance(steps, str):
+            steps = [s.strip() for s in steps.splitlines() if s.strip()]
+        return _show_workflow(
+            title=str(kwargs.get("title") or "Workflow Progress"),
+            steps=steps,
+            summary=str(kwargs.get("summary") or kwargs.get("message") or kwargs.get("text") or ""),
+            status=str(kwargs.get("status") or "completed"),
+            stats=kwargs.get("stats") if isinstance(kwargs.get("stats"), dict) else None,
+        )
+
     if action in ("info", "card", "message"):
         return _show_info(
             title=str(kwargs.get("title") or "Info"),
@@ -979,6 +1000,77 @@ def _show_info(title: str, body: str, meta: Optional[str] = None) -> str:
     return f"Showing {title or 'info'} on Gama Nexus, sir."
 
 
+def _show_code(
+    code: str,
+    language: str = "python",
+    title: str = "Code Snippet",
+    explanation: str = "",
+    output: str = "",
+) -> str:
+    if not code:
+        return "No code content provided, sir."
+    scene = {
+        "id": f"code-{int(time.time())}",
+        "type": "code",
+        "title": title or "Code Snippet",
+        "layer": 1,
+        "data": {
+            "code": code,
+            "language": language or "python",
+            "title": title or "Code Snippet",
+            "explanation": explanation,
+            "output": output,
+        },
+        "transition": {"enter": "fade", "duration": 280},
+    }
+    return canvas_show(scene)
+
+
+def _show_workflow(
+    title: str,
+    steps: list,
+    summary: str = "",
+    status: str = "completed",
+    stats: Optional[dict] = None,
+) -> str:
+    scene = {
+        "id": f"workflow-{int(time.time())}",
+        "type": "workflow",
+        "title": title or "Workflow Status",
+        "layer": 1,
+        "data": {
+            "title": title or "Workflow Status",
+            "steps": steps or [],
+            "summary": summary,
+            "status": status or "completed",
+            "stats": stats or {},
+        },
+        "transition": {"enter": "slide", "duration": 300},
+    }
+    return canvas_show(scene)
+
+
+def show_code_on_display(
+    code: str,
+    language: str = "python",
+    title: str = "Code Snippet",
+    explanation: str = "",
+    output: str = "",
+) -> str:
+    return _show_code(code=code, language=language, title=title, explanation=explanation, output=output)
+
+
+def show_workflow_on_display(
+    title: str,
+    steps: list,
+    summary: str = "",
+    status: str = "completed",
+    stats: Optional[dict] = None,
+) -> str:
+    return _show_workflow(title=title, steps=steps, summary=summary, status=status, stats=stats)
+
+
+
 def project_timer_on_display(
     total_seconds: int,
     label: str = "Timer",
@@ -1148,6 +1240,8 @@ __all__ = [
     "write_on_display",
     "close_display_stage",
     "show_enrollment_on_display",
+    "show_code_on_display",
+    "show_workflow_on_display",
     "canvas_command",
     "canvas_show",
     "canvas_clear",

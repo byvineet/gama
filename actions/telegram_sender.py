@@ -240,20 +240,133 @@ def _send_voice(chat_id: str, text: str, caption: str = "", voice_name: str = ""
 
 
 # ---------------------------------------------------------------------------
-# Resolve spoken content from real data (class schedule, etc.)
+# Dynamic, flexible context & content resolution (schedule, memory, notes, etc.)
 # ---------------------------------------------------------------------------
+
+_REFERENTIAL_PHRASES = frozenset({
+    "", "it", "that", "this", "them", "those", "send it", "send that", "send this",
+    "the message", "message", "the voice note", "voice note", "voice message",
+    "what you said", "what you just said", "what we discussed", "the schedule",
+    "schedule", "class schedule", "my schedule", "my classes",
+})
 
 _SCHEDULE_KEYWORDS = frozenset({
     "class_schedule", "schedule", "classes", "timetable", "class", "lectures",
+    "class_timetable", "today_schedule", "tomorrow_schedule",
 })
 
 
-def _resolve_spoken_text(**kwargs) -> str:
-    """Build the voice-note script from real sources when possible.
+def _resolve_schedule_day(day_str: str = "", fallback_text: str = "") -> str:
+    """Extract or determine the schedule day, defaulting to 'today' (never 'tomorrow')."""
+    d = (day_str or "").lower().strip()
+    if d in ("today", "tomorrow", "week", "next"):
+        return d
 
-    When regarding/topic is class schedule (or use_schedule=true), always load
-    Vineet's real timetable — never trust a freeform message that may invent times.
+    weekdays = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+    for w in weekdays:
+        if w in d:
+            return w
+
+    text_l = (fallback_text or "").lower()
+    if "tomorrow" in text_l:
+        return "tomorrow"
+    if "today" in text_l or "todays" in text_l or "today's" in text_l:
+        return "today"
+    if "week" in text_l or "weekly" in text_l:
+        return "week"
+    if "next" in text_l:
+        return "next"
+    for w in weekdays:
+        if w in text_l:
+            return w
+
+    # Default is always TODAY
+    return "today"
+
+
+def _content_from_class_schedule(day: str = "today", is_voice: bool = False) -> str:
+    """Pull real class schedule from class_schedule module."""
+    day = _resolve_schedule_day(day)
+    try:
+        from actions.class_schedule import class_schedule, _load_schedule, _describe_day, ensure_schedule_file
+        ensure_schedule_file()
+        if day in ("today", "tomorrow", "week", "next"):
+            body = class_schedule(action=day)
+        else:
+            schedule = _load_schedule()
+            if day in schedule:
+                body = _describe_day(schedule, day)
+            else:
+                body = class_schedule(action="today")
+    except Exception as exc:
+        logger.warning("class_schedule lookup failed: %s", exc)
+        return f"I could not load your class schedule ({exc})."
+
+    if not is_voice:
+        return body
+
+    label = day if day in ("today", "tomorrow", "week", "next") else day.capitalize()
+    if day == "next":
+        return f"Sir, {body}"
+    if day == "week":
+        return f"Sir, here is your weekly class schedule. {body}"
+    if day == "today":
+        return f"Sir, here is your class schedule for today. {body}"
+    return f"Sir, here is your class schedule for {label}. {body}"
+
+
+def _resolve_context_fallback() -> str:
+    """Retrieve conversational context or working memory if nothing explicit is given."""
+    # 1. Check working memory slots
+    try:
+        from context_engine import working_memory
+        for slot in ("task", "goal", "file", "project"):
+            val = working_memory.get_slot(slot)
+            if val:
+                return f"Regarding your {slot}: {val}"
+    except Exception:
+        pass
+
+    # 2. Check conversation state facts / goal
+    try:
+        from core.assistant_runtime import runtime
+        conv = runtime.conversation
+        if conv.recent_facts:
+            return conv.recent_facts[-1]
+        if conv.current_goal:
+            return f"Active goal: {conv.current_goal}"
+        if conv.active_task:
+            return f"Active task: {conv.active_task}"
+    except Exception:
+        pass
+
+    # 3. Check world model last message
+    try:
+        from core.world_model import world
+        snap = world.snapshot() if hasattr(world, "snapshot") else None
+        if snap and getattr(snap, "conversation", None):
+            last_asst = snap.conversation.get("last_assistant_message")
+            if last_asst:
+                return str(last_asst)
+    except Exception:
+        pass
+
+    return ""
+
+
+def _resolve_content(is_voice: bool = False, **kwargs) -> str:
+    """Build the message or voice-note text flexibly and context-aware.
+
+    Handles explicit messages, regarding/topic parameters, schedule lookups
+    (defaulting to today), reminders/tasks/notes, or contextual fallbacks.
     """
+    raw_msg = str(
+        kwargs.get("message")
+        or kwargs.get("text")
+        or kwargs.get("body")
+        or ""
+    ).strip()
+
     regarding = str(
         kwargs.get("regarding")
         or kwargs.get("topic")
@@ -261,7 +374,7 @@ def _resolve_spoken_text(**kwargs) -> str:
         or ""
     ).lower().strip().replace("-", "_").replace(" ", "_")
 
-    day = str(
+    day_arg = str(
         kwargs.get("day")
         or kwargs.get("when")
         or kwargs.get("schedule_day")
@@ -269,66 +382,66 @@ def _resolve_spoken_text(**kwargs) -> str:
     ).lower().strip()
 
     use_schedule = kwargs.get("use_schedule") in (True, "true", "1", "yes", 1)
+
+    # 1. Schedule request via regarding, use_schedule, or day
     if regarding in _SCHEDULE_KEYWORDS or use_schedule:
-        return _script_from_class_schedule(day or "tomorrow")
+        resolved_day = _resolve_schedule_day(day_arg or regarding, fallback_text=raw_msg)
+        return _content_from_class_schedule(resolved_day, is_voice=is_voice)
 
-    # Message itself points at class schedule (model forgot regarding=)
-    msg = str(
-        kwargs.get("message")
-        or kwargs.get("text")
-        or kwargs.get("body")
-        or ""
-    ).strip()
-    msg_l = msg.lower()
-    if any(k in msg_l for k in (
-        "class schedule", "timetable", "tomorrow's class", "todays class",
-        "today's class", "my classes", "my class",
-    )):
-        # Prefer real data over model-written times
-        day_guess = "tomorrow" if "tomorrow" in msg_l else (
-            "today" if "today" in msg_l else (
-                "week" if "week" in msg_l else "tomorrow"
-            )
-        )
-        if day in ("today", "tomorrow", "week", "next"):
-            day_guess = day
-        return _script_from_class_schedule(day_guess)
-
-    return msg
-
-
-def _script_from_class_schedule(day: str = "tomorrow") -> str:
-    """Pull Vineet's real timetable — never invent classes."""
-    day = (day or "tomorrow").lower().strip()
-    if day in ("schedule", "classes", "timetable", "class_schedule"):
-        day = "tomorrow"
-    if day not in ("today", "tomorrow", "week", "next"):
-        # weekday name
+    # 2. Reminders / Goals / Notes / Clipboard / Screen topic
+    if regarding in ("reminder", "reminders"):
         try:
-            from actions.class_schedule import class_schedule, _load_schedule, _describe_day, ensure_schedule_file
-            ensure_schedule_file()
-            schedule = _load_schedule()
-            if day in schedule:
-                body = _describe_day(schedule, day)
-            else:
-                body = class_schedule(action="tomorrow")
-        except Exception as exc:
-            logger.warning("class_schedule lookup failed: %s", exc)
-            return f"I could not load your class schedule ({exc})."
-    else:
+            from actions.reminder import reminder
+            res = reminder(action="list")
+            return f"Your active reminders:\n{res}" if not is_voice else f"Sir, here are your active reminders: {res}"
+        except Exception:
+            pass
+    elif regarding in ("goal", "goals", "active_goals", "task", "tasks"):
         try:
-            from actions.class_schedule import class_schedule
-            body = class_schedule(action=day)
-        except Exception as exc:
-            logger.warning("class_schedule lookup failed: %s", exc)
-            return f"I could not load your class schedule ({exc})."
+            from actions.goal_tracker import goal_tracker
+            res = goal_tracker(action="list", status="active")
+            return f"Active goals:\n{res}" if not is_voice else f"Sir, your active goals: {res}"
+        except Exception:
+            pass
+    elif regarding in ("clipboard", "copied"):
+        try:
+            from actions.clipboard import clipboard
+            return str(clipboard(action="get"))
+        except Exception:
+            pass
 
-    label = day if day in ("today", "tomorrow", "week", "next") else day.capitalize()
-    if day == "next":
-        return f"Sir, {body}"
-    if day == "week":
-        return f"Sir, here is your weekly class schedule. {body}"
-    return f"Sir, here is your class schedule for {label}. {body}"
+    # 3. If explicit message is provided and NOT a bare referential phrase
+    raw_msg_lower = raw_msg.lower().strip(" .!?,:;'\"")
+    if raw_msg and raw_msg_lower not in _REFERENTIAL_PHRASES:
+        # Check if the message is purely pointing at schedule lookup without providing the schedule details
+        if raw_msg_lower in (
+            "class schedule", "my class schedule", "today's class schedule", "todays class schedule",
+            "tomorrow's class schedule", "tomorrows class schedule", "my classes", "my timetable",
+            "classes today", "classes tomorrow", "today schedule", "tomorrow schedule"
+        ):
+            resolved_day = _resolve_schedule_day(day_arg, fallback_text=raw_msg_lower)
+            return _content_from_class_schedule(resolved_day, is_voice=is_voice)
+
+        # Otherwise, the LLM or user provided the concrete message/content — respect it!
+        return raw_msg
+
+    # 4. If raw_msg was referential (e.g. "send it", "send this") or empty
+    fallback = _resolve_context_fallback()
+    if fallback:
+        if is_voice and not fallback.lower().startswith("sir"):
+            return f"Sir, {fallback}"
+        return fallback
+
+    return raw_msg
+
+
+# Backwards-compatibility aliases
+def _resolve_spoken_text(**kwargs) -> str:
+    return _resolve_content(is_voice=True, **kwargs)
+
+
+def _script_from_class_schedule(day: str = "today") -> str:
+    return _content_from_class_schedule(day=day, is_voice=True)
 
 
 # ---------------------------------------------------------------------------
@@ -573,16 +686,14 @@ def telegram_sender(action: str = "status", **kwargs) -> str:
             kwargs.get("chat_id") or kwargs.get("chatid") or "",
         )
 
-    if action in ("send", "message", "msg"):
+    if action in ("send", "message", "msg", "send_message", "text"):
         chat = str(kwargs.get("chat_id") or kwargs.get("chatid") or _get_chat_id()).strip()
-        return _send_message(chat, kwargs.get("message") or kwargs.get("text") or "")
+        msg = _resolve_content(is_voice=False, **kwargs)
+        return _send_message(chat, msg)
 
     if action in ("send_voice", "voice", "voice_note", "voice_message", "send_voice_note"):
         chat = str(kwargs.get("chat_id") or kwargs.get("chatid") or _get_chat_id()).strip()
-        # Prefer real schedule data when regarding/day points at class schedule
-        msg = _resolve_spoken_text(**kwargs)
-        if not msg:
-            msg = str(kwargs.get("message") or kwargs.get("text") or kwargs.get("body") or "")
+        msg = _resolve_content(is_voice=True, **kwargs)
         return _send_voice(
             chat,
             msg,
@@ -594,9 +705,7 @@ def telegram_sender(action: str = "status", **kwargs) -> str:
         "schedule_voice", "schedule_voice_note", "send_voice_at", "voice_at",
     ):
         chat = str(kwargs.get("chat_id") or kwargs.get("chatid") or _get_chat_id()).strip()
-        msg = _resolve_spoken_text(**kwargs)
-        if not msg:
-            msg = str(kwargs.get("message") or kwargs.get("text") or kwargs.get("body") or "")
+        msg = _resolve_content(is_voice=True, **kwargs)
         return _schedule_voice_note(
             msg,
             chat_id=chat,
@@ -619,10 +728,10 @@ def telegram_sender(action: str = "status", **kwargs) -> str:
             query = kwargs.get("query") or kwargs.get("name") or ""
             if query:
                 try:
-                    from actions.file_find import find_files
-                    hits = find_files(str(query), limit=1)
-                    if hits:
-                        path = str(hits[0])
+                    from actions.context_resolver import resolve_file_reference
+                    res = resolve_file_reference(str(query))
+                    if res and res.path and res.path.exists():
+                        path = str(res.path)
                 except Exception:
                     pass
         if not path:

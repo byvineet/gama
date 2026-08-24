@@ -31,11 +31,15 @@ class EmojiStripFilter(logging.Filter):
         return True
 
 
+import collections
 import os
 import sys
+import threading
+import time
 from logging.handlers import RotatingFileHandler, QueueHandler, QueueListener
 from pathlib import Path
 import queue
+from typing import Any, Dict, List, Optional
 
 _BASE_DIR = Path(__file__).resolve().parent.parent
 LOGS_DIR  = _BASE_DIR / "logs"
@@ -47,6 +51,89 @@ _initialized = False
 
 # Module-level reference so the listener is never garbage-collected.
 _queue_listener: "QueueListener | None" = None
+
+# ── In-Memory Ring Buffer for Real-Time Error Inspection ──────────────────
+_ERROR_BUFFER_MAX = 100
+_recent_errors_lock = threading.Lock()
+_recent_errors: collections.deque[Dict[str, Any]] = collections.deque(maxlen=_ERROR_BUFFER_MAX)
+
+
+class RecentErrorLogHandler(logging.Handler):
+    """Captures WARNING, ERROR, and CRITICAL log records into an in-memory buffer."""
+    def __init__(self, level: int = logging.WARNING):
+        super().__init__(level=level)
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            exc_text = ""
+            if record.exc_info:
+                import traceback
+                exc_text = "".join(traceback.format_exception(*record.exc_info))
+
+            entry = {
+                "timestamp": record.created,
+                "time_str": time.strftime("%H:%M:%S", time.localtime(record.created)),
+                "level": record.levelname,
+                "logger": record.name,
+                "message": record.getMessage(),
+                "traceback": exc_text,
+                "filename": record.filename,
+                "lineno": record.lineno,
+            }
+            with _recent_errors_lock:
+                _recent_errors.append(entry)
+        except Exception:
+            pass
+
+
+def get_recent_errors(limit: int = 20, min_level: str = "ERROR") -> List[Dict[str, Any]]:
+    """Retrieve recent errors/warnings directly from in-memory ring buffer (0 ms latency)."""
+    min_lvl_int = getattr(logging, min_level.upper(), logging.ERROR)
+    with _recent_errors_lock:
+        items = list(_recent_errors)
+
+    filtered = []
+    for item in items:
+        lvl_int = getattr(logging, item["level"].upper(), logging.INFO)
+        if lvl_int >= min_lvl_int:
+            filtered.append(dict(item))
+
+    return filtered[-limit:]
+
+
+def get_log_tail(lines: int = 50, max_bytes: int = 256 * 1024, min_level: Optional[str] = None) -> List[str]:
+    """Efficiently read the last N lines from gama.log without loading large files into memory.
+
+    Uses backward seek from EOF, reading at most max_bytes.
+    """
+    if not LOG_FILE.exists():
+        return []
+    try:
+        min_level_str = min_level.upper().strip() if min_level else None
+        target_lines: List[str] = []
+        with open(LOG_FILE, "rb") as f:
+            f.seek(0, os.SEEK_END)
+            file_size = f.tell()
+            if file_size == 0:
+                return []
+
+            read_size = min(file_size, max_bytes)
+            f.seek(file_size - read_size, os.SEEK_SET)
+            block = f.read(read_size).decode("utf-8", errors="replace")
+            all_lines = block.splitlines()
+            if read_size < file_size and len(all_lines) > 1:
+                all_lines = all_lines[1:]
+
+            if min_level_str:
+                for line in all_lines:
+                    if f"| {min_level_str}" in line or (min_level_str == "ERROR" and "| CRITICAL" in line):
+                        target_lines.append(line)
+            else:
+                target_lines = all_lines
+
+            return target_lines[-lines:]
+    except Exception as exc:
+        return [f"Error reading log tail: {exc}"]
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -90,12 +177,16 @@ def setup_logging(level: str = "INFO") -> None:
         ch.setFormatter(fmt)
     ch.setLevel(console_level)
 
-    # ── Async queue front-end — what the root logger actually calls
+    # In-memory error capture handler (synchronous, 0 ms memory append)
+    eh = RecentErrorLogHandler(level=logging.WARNING)
+    root.addHandler(eh)
+
+    # ── Async queue front-end — what the root logger actually calls for I/O
     log_queue: queue.Queue = queue.Queue(maxsize=-1)   # unbounded; never drops
     queue_handler = QueueHandler(log_queue)
     root.addHandler(queue_handler)
 
-    # ── Background listener — drains the queue to the real handlers
+    # ── Background listener — drains the queue to the real blocking handlers
     _queue_listener = QueueListener(
         log_queue, fh, ch,
         respect_handler_level=True,
@@ -111,27 +202,15 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
-__all__ = ["setup_logging", "get_logger"]
-
-
-# ---------------------------------------------------------------------------
-# Crash-safe logging
-# ---------------------------------------------------------------------------
 def flush_and_stop_logging() -> None:
-    """Best-effort synchronous flush for fatal shutdown paths.
-
-    Normal application logging is asynchronous. Fatal paths must flush the
-    QueueListener before process termination so the last exception cannot be
-    lost when sys.exit() occurs immediately afterward.
-    """
+    """Best-effort synchronous flush for fatal shutdown paths."""
     try:
-        listener = globals().get("_listener")
+        listener = globals().get("_queue_listener")
         if listener is not None:
             listener.stop()
     except Exception:
         pass
 
-    # Flush all handlers attached to the root logger.
     try:
         import logging as _logging
         for _handler in _logging.getLogger().handlers:
@@ -141,3 +220,13 @@ def flush_and_stop_logging() -> None:
                 pass
     except Exception:
         pass
+
+
+__all__ = [
+    "setup_logging",
+    "get_logger",
+    "get_recent_errors",
+    "get_log_tail",
+    "flush_and_stop_logging",
+    "LOG_FILE",
+]

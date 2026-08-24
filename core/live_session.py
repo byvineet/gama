@@ -263,32 +263,16 @@ class LiveSessionController:
             except Exception:
                 pass
             _directives.append(
-                "MEMORY POLICY: You decide what is worth storing long-term. "
-                "When Sir shares something durable and personal (name, preferences, "
-                "project progress, constraints, relationships), silently call "
-                "remember or save_memory. Do not store one-off commands or "
-                "ephemeral chatter. Prefer few high-quality facts over many weak ones."
+                "PERSONAL COMPANION & LEARNING POLICY: You are Sir's dedicated, highly personal assistant. "
+                "Continuously learn his working style, coding habits, preferred apps/tools, active projects, "
+                "and daily routines. Whenever Sir shares personal preferences, opinions, project context, "
+                "or constraints, silently call 'remember' or 'save_memory' in the background. "
+                "Ground your answers in his remembered profile and keep responses personalized, concise, and natural."
             )
 
-            # Response gating — Proactive Audio decides whether to speak.
-            # When proactive_audio is on, the model may stay silent if the
-            # input is not relevant. Reinforce that with explicit rules:
-            # respond ONLY when the user is clearly addressing Gama.
             _directives.append(
-                "WHEN TO RESPOND (critical — Proactive Audio is enabled):\n"
-                "- Speak or call tools ONLY when the user is directing speech "
-                "at you (Gama / Gamma / your name), or clearly continuing an "
-                "active command you just started.\n"
-                "- Examples that REQUIRE a response: \"Gama, what time is it?\", "
-                "\"what do you think, Gama?\", \"open Chrome\", \"stop\", "
-                "follow-ups right after you asked a question.\n"
-                "- Examples that must stay SILENT: background conversation "
-                "between other people, TV/music, muttering not aimed at you, "
-                "ambient noise, speech that does not address you or continue "
-                "your task.\n"
-                "- If unsure whether you were addressed, stay silent.\n"
-                "- Prefer concise natural replies. Never use chatbot filler "
-                "('Certainly!', 'I'd be happy to', 'How may I assist you?')."
+                "CONVERSATIONAL POLICY: Answer naturally and concisely. "
+                "Never use chatbot filler ('Certainly!', 'I\\'d be happy to', 'How may I assist you?')."
             )
             try:
                 from core.assistant_runtime import runtime as _rt_mode
@@ -299,20 +283,16 @@ class LiveSessionController:
             except Exception:
                 pass
 
-            # Local EmotionDetector / tone-changer removed.
-            # Tone and affect are handled by Gemini Live Affective Dialog
-            # (enable_affective_dialog=True in LiveConnectConfig).
-
             parts.append("\n".join(_directives))
         except Exception as exc:
             log.debug(f"user_settings prompt directives skipped (non-fatal): {exc}")
 
-        # Gemini Live VAD — tighter turn-taking (only pass knobs the SDK accepts).
+        # Gemini Live VAD — balanced 1-2s conversational turn-taking
         vad_config = None
         try:
             _td_kwargs = {
                 "turn_detection_type": "SERVER_VAD",
-                "silence_duration_ms": 200,
+                "silence_duration_ms": 250,
                 "prefix_padding_ms": 20,
             }
             # Optional knobs — probe schema so unknown names never reach the wire.
@@ -338,7 +318,7 @@ class LiveSessionController:
                 # Strip unknown kwargs and retry with minimal set
                 _td = types.TurnDetectionConfig(
                     turn_detection_type="SERVER_VAD",
-                    silence_duration_ms=200,
+                    silence_duration_ms=250,
                 )
             _ri_kwargs = {"turn_detection": _td}
             # activity_handling only if RealtimeInputConfig accepts it
@@ -375,30 +355,13 @@ class LiveSessionController:
         if vad_config is not None:
             cfg_kwargs["realtime_input_config"] = vad_config
 
-        # Affective Dialog + Proactive Audio require:
-        #   - Gemini 2.5 Flash Live Preview
-        #     (gemini-2.5-flash-native-audio-preview-12-2025)
-        #   - Client(http_options={"api_version": "v1beta"})
-        #   - proactivity={'proactive_audio': True} so the model can choose
-        #     NOT to respond when speech is not directed at Gama
-        #     (https://ai.google.dev/gemini-api/docs/live-api/capabilities#proactive-audio)
-        # If the field is unknown on the wire, the server closes with 1007.
-        # After a 1007 rejection, _disable_live_advanced_audio is set and we
-        # never send these fields again this process.
-        _advanced_keys: list[str] = []
-        if not getattr(asst, "_disable_live_advanced_audio", False):
+        # Proactive Audio: allows the model to reject responding to out-of-context speech
+        # or stay silent when the user is speaking to someone else / not directing requests to the assistant.
+        try:
+            cfg_kwargs["proactivity"] = types.ProactivityConfig(proactive_audio=True)
+        except Exception:
             cfg_kwargs["proactivity"] = {"proactive_audio": True}
-            cfg_kwargs["enable_affective_dialog"] = True
-            _advanced_keys.extend(["proactivity", "enable_affective_dialog"])
-            log.info(
-                "[Live] Proactive Audio ENABLED — model may stay silent when "
-                "speech is not directed at Gama."
-            )
-        else:
-            log.warning(
-                "[Live] Proactive Audio DISABLED for this process "
-                "(previous 1007 rejection of advanced audio fields)."
-            )
+        _advanced_keys: list[str] = []
 
         # Context window compression
         try:
@@ -412,6 +375,16 @@ class LiveSessionController:
                 }
             except Exception:
                 log.debug("ContextWindowCompressionConfig unsupported — skipping.")
+
+        # Session Resumption: restores prior session handle on reconnect
+        try:
+            _res_handle = getattr(asst, "_live_resumption_handle", None)
+            if _res_handle:
+                cfg_kwargs["session_resumption"] = types.SessionResumptionConfig(
+                    handle=_res_handle
+                )
+        except Exception as _sr_exc:
+            log.debug(f"SessionResumptionConfig setup skipped: {_sr_exc}")
 
         # Gemini 2.5 Flash Live uses thinking_budget (not thinking_level).
         # Zero disables thinking and minimizes latency for a voice assistant.
@@ -879,20 +852,21 @@ class LiveSessionController:
                         return
                     try:
                         from google.genai import types as _gtypes
-                        await asst.session.send_realtime_input(
-                            video=_gtypes.Blob(data=jpeg, mime_type=mime or "image/jpeg")
-                        )
-                    except TypeError:
-                        # Older SDKs: plain dict media shape
-                        await asst.session.send_realtime_input(
-                            video={"data": jpeg, "mime_type": mime or "image/jpeg"}
-                        )
+                        # Gemini Live API expects image frames via media= (mapped to media_chunks in mldev protocol)
+                        try:
+                            await asst.session.send_realtime_input(
+                                media=_gtypes.Blob(data=jpeg, mime_type=mime or "image/jpeg")
+                            )
+                        except TypeError:
+                            await asst.session.send_realtime_input(
+                                media={"data": jpeg, "mime_type": mime or "image/jpeg"}
+                            )
                     except Exception as exc:
                         err = str(exc).lower()
                         if any(x in err for x in ("1011", "1008", "closed", "aborted")):
-                            log.debug(f"[LiveVision] session dead on video send: {exc}")
+                            log.debug(f"[LiveVision] session dead on media send: {exc}")
                         else:
-                            log.debug(f"[LiveVision] video send: {exc}")
+                            log.debug(f"[LiveVision] media send: {exc}")
 
                 asyncio.run_coroutine_threadsafe(_go(), loop)
             except Exception as exc:
@@ -1188,6 +1162,14 @@ class LiveSessionController:
                     # this flag even though the user did not barge in).
                     if response.server_content:
                         sc = response.server_content
+
+                        # Capture session resumption handle for seamless reconnects
+                        if hasattr(sc, "session_resumption_update") and sc.session_resumption_update:
+                            _h = getattr(sc.session_resumption_update, "new_handle", None)
+                            if _h:
+                                asst._live_resumption_handle = _h
+                                log.debug(f"[Live] Session resumption handle updated: {_h[:16]}...")
+
                         if hasattr(sc, "interrupted") and sc.interrupted:
                             _barge_on = bool(getattr(asst, "_barge_in_enabled", True))
                             if not _barge_on:
@@ -1685,7 +1667,7 @@ class LiveSessionController:
             # Re-raise so TaskGroup / run() reconnect path is triggered
             raise
 
-    def _speak_exact(self, text: str, *, priority=None, kind: str = "prompt",
+    def _speak_exact(self, text: str, priority=None, kind: str = "prompt",
                       blocking: bool = False) -> None:
         """Speak a short, fixed enrollment/verification/ack line verbatim
         (e.g. "Welcome back, Vineet.", "Please try again.", "One moment.").

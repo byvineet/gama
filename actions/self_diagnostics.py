@@ -374,9 +374,126 @@ def install_global_handler() -> None:
     log.info("[self_diagnostics] Global crash handler installed.")
 
 
+# ---------------------------------------------------------------------------
+# Public Tool Entry Point: self_diagnostics
+# ---------------------------------------------------------------------------
+
+def _explain_error_record(entry: Dict[str, Any]) -> str:
+    """Format an error dict into natural conversational human language."""
+    time_str = entry.get("time_str") or "Recently"
+    module = entry.get("logger") or entry.get("module") or "system"
+    msg = entry.get("message") or entry.get("exc_message") or "Unknown error"
+    tb = entry.get("traceback") or entry.get("traceback_text") or ""
+    
+    # Try signature match
+    sig_text = f"{msg}\n{tb[-500:] if tb else ''}"
+    match = _match_known_signature(sig_text)
+    
+    explanation_parts = [
+        f"At {time_str}, an error occurred in module '{module}':",
+        f"  Details: {msg}",
+    ]
+    if match:
+        explanation_parts.append(f"  Plain-language diagnosis: {match[0]}")
+        explanation_parts.append(f"  Suggested fix: {match[1]}")
+    elif tb:
+        # Extract the last line of the traceback for root cause
+        last_tb_lines = [l.strip() for l in tb.strip().splitlines() if l.strip()]
+        if last_tb_lines:
+            explanation_parts.append(f"  Root cause: {last_tb_lines[-1]}")
+            
+    return "\n".join(explanation_parts)
+
+
+def self_diagnostics(action: str = "explain_last_error", **kwargs) -> str:
+    """Read Gama's error logs in real-time and diagnose issues in natural human language."""
+    from utils.logger import get_recent_errors, get_log_tail
+    action = (action or "explain_last_error").lower().strip().replace("-", "_").replace(" ", "_")
+
+    if action in ("explain_last_error", "last_error", "explain", "diagnose", "what_error", "error"):
+        # 1. Check in-memory ring buffer for immediate real-time error
+        mem_errors = get_recent_errors(limit=5, min_level="ERROR")
+        if mem_errors:
+            latest = mem_errors[-1]
+            return _explain_error_record(latest)
+
+        # 2. Check crash logs if no in-memory errors
+        crashes = recent_crash_summary(limit=1)
+        if crashes:
+            c = crashes[-1]
+            c_path = Path(c.get("path") or "")
+            if c_path.exists():
+                try:
+                    c_data = json.loads(c_path.read_text(encoding="utf-8"))
+                    return _explain_error_record(c_data)
+                except Exception:
+                    pass
+            return f"A recent crash was recorded in module '{c.get('module')}': {c.get('exc_type')}."
+
+        # 3. Check warnings or recent log tail
+        mem_warnings = get_recent_errors(limit=3, min_level="WARNING")
+        if mem_warnings:
+            latest = mem_warnings[-1]
+            return f"No hard errors recorded, but there was a recent warning:\n" + _explain_error_record(latest)
+
+        return "No errors have been recorded recently. All systems are operating normally."
+
+    if action in ("recent_errors", "errors", "read_errors", "list_errors"):
+        limit = int(kwargs.get("limit") or 5)
+        min_level = str(kwargs.get("level") or "ERROR").upper()
+        mem_errors = get_recent_errors(limit=limit, min_level=min_level)
+        if not mem_errors:
+            # Fallback to tailing gama.log for error lines
+            log_lines = get_log_tail(lines=limit, min_level=min_level)
+            if not log_lines:
+                return f"No {min_level} events found in recent logs."
+            return f"Recent {min_level} log entries:\n" + "\n".join(log_lines)
+
+        lines = [f"Recent {min_level} events ({len(mem_errors)}):"]
+        for idx, e in enumerate(mem_errors, 1):
+            t = e.get("time_str", "?")
+            mod = e.get("logger", "unknown")
+            msg = e.get("message", "")[:120]
+            lines.append(f"  {idx}. [{t}] [{mod}] {msg}")
+        return "\n".join(lines)
+
+    if action in ("read_logs", "tail", "logs", "log_tail"):
+        n = int(kwargs.get("lines") or kwargs.get("limit") or 30)
+        lvl = kwargs.get("level") or None
+        tail = get_log_tail(lines=n, min_level=lvl)
+        if not tail:
+            return "Log file is currently empty or not found."
+        return f"Last {len(tail)} lines from gama.log:\n" + "\n".join(tail)
+
+    if action in ("crash_summary", "crashes"):
+        crashes = recent_crash_summary(limit=5)
+        if not crashes:
+            return "No crash reports recorded."
+        lines = ["Recent recorded crashes:"]
+        for c in crashes:
+            t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(c.get("timestamp", 0)))
+            lines.append(f"  - [{t}] {c.get('module')}: {c.get('exc_type')} (matched known signature: {c.get('matched')})")
+        return "\n".join(lines)
+
+    if action in ("status", "health", "info"):
+        looping = is_crash_looping()
+        recent_err_count = len(get_recent_errors(limit=20, min_level="ERROR"))
+        parts = [
+            f"crash_looping={'YES' if looping else 'NO'}",
+            f"recent_errors_in_memory={recent_err_count}",
+        ]
+        return "Self-diagnostics status: " + ", ".join(parts) + "."
+
+    return (
+        "Unknown action. Use: explain_last_error, recent_errors, read_logs, "
+        "crash_summary, status."
+    )
+
+
 __all__ = [
     "CrashReport", "record_crash", "record_soft_error",
     "is_crash_looping", "recent_crash_summary", "install_global_handler",
+    "self_diagnostics",
 ]
 
 

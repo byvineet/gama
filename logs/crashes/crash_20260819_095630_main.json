@@ -1,0 +1,12 @@
+{
+  "timestamp": 1787113590.269932,
+  "when": "2026-08-19 09:56:30",
+  "module": "main",
+  "exc_type": "ModuleNotFoundError",
+  "exc_message": "No module named 'actions.desktop_notify'",
+  "diagnosis": "A required Python package isn't installed in this environment.",
+  "suggested_fix": "Run `pip install -r requirements.txt` (or reinstall the missing package specifically) and restart Gama.",
+  "matched_known_signature": true,
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import main; print('Main imported successfully'); from core.live_session import LiveSession; s = LiveSession(); print('LiveSession instantiated successfully')\n    ^^^^^^^^^^^\n  File \"C:\\Users\\notde\\Desktop\\Gama 2.0\\main.py\", line 224, in <module>\n    from actions.desktop_notify import (\n        configure as configure_desktop_notify, desktop_notify,\n    )\nModuleNotFoundError: No module named 'actions.desktop_notify'\n",
+  "extra": {}
+}

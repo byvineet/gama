@@ -277,22 +277,24 @@ class LiveVisionEngine:
             import sys
             self._close_camera()
 
-            # Preferred backend order: MSMF first on Windows (DSHOW often broken
-            # for index-based open on modern laptops), then default, then DSHOW.
+            # Preferred backend order: DSHOW first on Windows (fastest to open and read without MSMF enumeration hang),
+            # then ANY, then MSMF.
             if sys.platform == "win32":
                 backends = [
-                    ("MSMF", getattr(cv2, "CAP_MSMF", 1400)),
-                    ("ANY",  getattr(cv2, "CAP_ANY", 0)),
                     ("DSHOW", getattr(cv2, "CAP_DSHOW", 700)),
+                    ("ANY",  getattr(cv2, "CAP_ANY", 0)),
+                    ("MSMF", getattr(cv2, "CAP_MSMF", 1400)),
                 ]
             else:
                 backends = [("ANY", 0)]
 
-            # Prefer the requested index, then neighbors
-            indices = [int(self._camera_index)]
-            for i in range(0, 4):
-                if i not in indices:
-                    indices.append(i)
+            # Prefer the requested index, then 0, 1
+            idx_req = int(self._camera_index)
+            indices = [idx_req]
+            if 0 not in indices:
+                indices.append(0)
+            if 1 not in indices:
+                indices.append(1)
 
             last_err = ""
             for idx in indices:
@@ -323,10 +325,10 @@ class LiveVisionEngine:
                     except Exception:
                         pass
 
-                    # Warm-up + verify a real frame (some backends open but never deliver)
+                    # Fast warm-up + verify a real frame (some backends open but never deliver)
                     ok_frame = False
                     frame = None
-                    for _ in range(8):
+                    for _ in range(3):
                         try:
                             ret, frame = cap.read()
                         except Exception as exc:
@@ -335,7 +337,7 @@ class LiveVisionEngine:
                         if ret and frame is not None and getattr(frame, "size", 0) > 0:
                             ok_frame = True
                             break
-                        time.sleep(0.05)
+                        time.sleep(0.01)
 
                     if not ok_frame:
                         try:
@@ -517,17 +519,22 @@ def live_vision_action(
     if action in ("disable", "stop", "off"):
         return eng.disable()
     if action in ("snapshot", "look", "capture", "see_now"):
-        # Exact-moment frame for vision questions ("what am I holding?")
+        # Exact-moment frame for vision questions ("what am I holding?", "what do you see?")
         src = mode if mode in ("camera", "desktop", "both", "screen") else "camera"
         if src == "both":
             src = "camera"
         jpeg = eng.snapshot_and_emit(source=src)
         if jpeg:
             return (
-                f"Captured exact-moment {src} frame ({len(jpeg)} bytes) and sent to Live. "
-                "Describe what you see now."
+                f"Exact-moment {src} frame ({len(jpeg)} bytes) captured and injected into the Live session. "
+                "Look at the camera feed and answer Sir's question truthfully based ONLY on what is clearly visible in the frame. "
+                "If Sir is not holding anything or the hands/view are empty, state clearly that you do not see anything being held. "
+                "Never invent, assume, or guess objects."
             )
-        return "Could not capture a frame. Check camera permissions or try mode=desktop."
+        return (
+            "Could not capture a frame from the camera. The camera may be disconnected, disabled, or in use by another app. "
+            "Inform Sir that the camera feed is unavailable rather than guessing."
+        )
     if action in ("status", "state"):
         s = eng.status()
         return (

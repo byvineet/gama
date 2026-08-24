@@ -733,46 +733,31 @@ class WakeController:
         "                     action=list\n"
         "                     action=cancel_all\n"
         "  notes              action=list\n"
-        "  web_search         query=STRING\n"
+        "  edge_search        query=STRING\n"
         "  calculator         expression=STRING\n"
         "  music              action=play|pause|stop|next|previous\n\n"
-        # "INSTAGRAM RULE: ANY command mentioning instagram — connect, login, logout, DM,\n"
-        # "message, notifications, check instagram — MUST use the instagram tool.\n"
-        # "NEVER route instagram to open_app.\n\n"
         # ── H1: Gemini-First gate ─────────────────────────────────────────
         # The Gemini Live model answering this user already has strong
-        # general knowledge (facts, definitions, history, science, math,
-        # coding, world knowledge).  web_search / edge_search must ONLY be
-        # used when the user explicitly asks to search the web, or when the
-        # answer requires real-time / up-to-date data (live scores, today's
-        # news, current prices, etc.).  For everything Gemini already knows,
-        # return {"tool":null} so the Live session answers directly —
-        # faster, cheaper, no unnecessary browser automation.
-        'GEMINI-FIRST RULE: return {"tool":null} for any question Gemini\n'
-        "can answer from its own knowledge — definitions, explanations,\n"
-        "history, science, math, coding, general facts, world knowledge.\n"
-        "Use web_search ONLY when the user explicitly says 'search', 'look\n"
-        "up', 'find online', 'latest news', 'current price', or when the\n"
-        "answer is clearly time-sensitive (live scores, today's weather\n"
-        "forecast, stock prices, breaking news).\n\n"
+        # general knowledge and native Google Search grounding.
+        # edge_search must ONLY be used when the user explicitly asks to
+        # search in the Edge browser window. For all web questions / facts,
+        # return {"tool":null} so Gemini Live handles it directly with native search.
+        'GEMINI-FIRST RULE: return {"tool":null} for questions and search queries\n'
+        "so Gemini Live answers natively using its built-in knowledge & Google Search.\n"
+        "Use edge_search ONLY when the user explicitly asks to open Edge or search in browser.\n\n"
         'Return {"tool":null} when:\n'
         "  - Command is complex, multi-step, or ambiguous\n"
         "  - You are not ≥90% confident about the exact tool + args\n"
         "  - Command is conversational, requires judgment, or needs reasoning\n"
-        "  - The question is factual/general knowledge Gemini already knows\n\n"
+        "  - The question is factual, general knowledge, or web query\n\n"
         'Examples:\n'
         '  "volume up"                    → {"tool":"computer_settings","args":{"action":"volume_up"}}\n'
         '  "what time is it"              → {"tool":"system_info","args":{"action":"time"}}\n'
         '  "open chrome"                  → {"tool":"open_app","args":{"app_name":"chrome"}}\n'
-        # '  "connect instagram"            → {"tool":"instagram","args":{"action":"login"}}\n'
-        # '  "login instagram"              → {"tool":"instagram","args":{"action":"login"}}\n'
-        # '  "check instagram"              → {"tool":"instagram","args":{"action":"notifications"}}\n'
-        '  "search for python tutorials"  → {"tool":"web_search","args":{"query":"python tutorials"}}\n'
-        '  "who is elon musk"             → {"tool":null}  (Gemini knows this)\n'
-        '  "what is python"               → {"tool":null}  (Gemini knows this)\n'
-        '  "explain recursion"            → {"tool":null}  (Gemini knows this)\n'
-        '  "capital of japan"             → {"tool":null}  (Gemini knows this)\n'
-        '  "latest iphone price"          → {"tool":"web_search","args":{"query":"latest iphone price"}}\n'
+        '  "search for python in edge"    → {"tool":"edge_search","args":{"query":"python"}}\n'
+        '  "who is elon musk"             → {"tool":null}  (Gemini Live answers)\n'
+        '  "what is python"               → {"tool":null}  (Gemini Live answers)\n'
+        '  "latest iphone price"          → {"tool":null}  (Gemini Live native search)\n'
         '  "what can you do"              → {"tool":null}'
     )
 

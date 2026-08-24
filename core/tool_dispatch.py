@@ -44,8 +44,6 @@ _PARALLEL_SAFE_TOOLS: frozenset[str] = frozenset({
     "display_stage", "d2_mode", "weather_action", "system_info", "system_status",
     "goal_tracker", "reminder",
     "weather_report",
-    "web_search",
-    "web_reader",
     "system_info",
     "notes",           # read-only note lookup
     "process_manager", # read-only process list
@@ -82,37 +80,25 @@ def _lazy_import(module_path: str, attr: str):
 # Eager imports actually referenced inside this module's dispatch logic.
 from memory import facade as memory_facade
 from actions.calendar_action import calendar_action
-from actions.desktop_notify import desktop_notify
 from voice.soundscape import sound_action as _sound_action_handler
 from voice.event_voice import event_voice_action as _event_voice_handler
 from actions.desktop_context import desktop_context
 
 open_app              = _lazy_import("actions.open_app", "open_app")
-web_search            = _lazy_import("actions.web_search", "web_search")
 edge_search           = _lazy_import("actions.edge_search", "edge_search")
 class_schedule        = _lazy_import("actions.class_schedule", "class_schedule")
 computer_settings     = _lazy_import("actions.computer_settings", "computer_settings")
-edith_analyze_screen  = _lazy_import("actions.edith_vision", "edith_analyze_screen")
-webcam_process        = _lazy_import("actions.screen_processor", "webcam_process")
 screen_agent          = _lazy_import("actions.screen_agent", "screen_agent")
 file_processor        = _lazy_import("actions.file_processor", "file_processor")
-web_reader            = _lazy_import("actions.web_reader", "web_reader")
 file_controller       = _lazy_import("actions.file_controller", "file_controller")
 weather_action        = _lazy_import("actions.weather_report", "weather_action")
-self_awareness         = _lazy_import("actions.self_awareness", "self_awareness")
 reminder              = _lazy_import("actions.reminder", "reminder")
-set_confirmation_code = _lazy_import("actions.confirmation", "set_confirmation_code")
-notes                 = _lazy_import("actions.notes", "notes")
 system_info           = _lazy_import("actions.system_info", "system_info")
-get_system_status     = _lazy_import("actions.system_info", "get_system_status")
 clipboard             = _lazy_import("actions.clipboard", "clipboard")
-utilities             = _lazy_import("actions.utilities", "utilities")
 display_stage         = _lazy_import("actions.display_stage", "display_stage")
-canvas_visual         = _lazy_import("actions.canvas_visual", "canvas_visual")
 email_sender          = _lazy_import("actions.email_sender", "email_sender")
 telegram_sender       = _lazy_import("actions.telegram_sender", "telegram_sender")
 process_manager       = _lazy_import("actions.process_manager", "process_manager")
-startup_manager       = _lazy_import("actions.startup_manager", "startup_manager")
 user_settings_action  = _lazy_import("actions.user_settings_action", "user_settings")
 media_controller       = _lazy_import("actions.media_controller", "media_controller")
 get_music_controller   = _lazy_import("music.controller", "MusicController")
@@ -120,15 +106,14 @@ browser_control       = _lazy_import("actions.browser_control", "browser_control
 keyboard_actions      = _lazy_import("actions.keyboard_actions", "keyboard_actions")
 mouse_actions         = _lazy_import("actions.mouse_actions", "mouse_actions")
 computer_agent        = _lazy_import("actions.computer_agent", "computer_agent")
-ui_automation         = _lazy_import("actions.ui_automation", "ui_automation")
 advanced_automation   = _lazy_import("actions.advanced_automation", "advanced_automation")
 automation_run        = _lazy_import("automation.engine", "run_goal")
 terminal_command      = _lazy_import("actions.terminal", "terminal_command")
 knowledge_action      = _lazy_import("actions.knowledge_action", "knowledge_action")
 goal_tracker          = _lazy_import("actions.goal_tracker", "goal_tracker")
 protocol_engine        = _lazy_import("actions.protocol_engine", "protocol_engine")
-file_find             = _lazy_import("actions.file_find", "file_find")
-project_context_action = _lazy_import("memory.project_context", "project_context_action")
+self_diagnostics       = _lazy_import("actions.self_diagnostics", "self_diagnostics")
+self_repair            = _lazy_import("actions.self_repair", "self_repair")
 
 
 # Music Engine singleton — created on first use so startup isn't delayed.
@@ -290,27 +275,11 @@ def _register_tools() -> None:
 
     # ── Search ────────────────────────────────────────────────────────────────
 
-    _SEARCH_KWS = (
-        "search", "google", "look up online", "look it up", "browse",
-        "find online", "web search", "on the internet", "on the web",
-        "search online", "search the web", "search for it", "search it",
-    )
     _BROWSER_KWS = (
         "search", "google", "browse", "open edge", "edge search",
         "look up online", "look it up", "find online", "on the internet",
         "on the web", "search online", "search the web",
     )
-
-    def _web_search_handler(args):
-        last_text = (getattr(_ACTIVE_ASSISTANT, "_last_input_transcript", "") or "").lower()
-        if not any(kw in last_text for kw in _SEARCH_KWS):
-            return (
-                "Web search is disabled by user preference. "
-                "Answer using your own knowledge and training data instead. "
-                "If the user specifically wants a web search they will say so explicitly."
-            )
-        return web_search(args.get("query", ""), args.get("mode", "search"),
-                          args.get("items"), args.get("aspect", "specs"))
 
     def _edge_search_handler(args):
         last_text = (getattr(_ACTIVE_ASSISTANT, "_last_input_transcript", "") or "").lower()
@@ -322,30 +291,11 @@ def _register_tools() -> None:
             )
         return edge_search(args.get("query", ""), args.get("new_tab", True))
 
-    # H5 FIX — Disambiguate search tools so Gemini picks deterministically:
-    #   web_search  = silent background search, NO browser window opened.
-    #                 Use for: "search for X", "look up Y", "find Z online"
-    #                 where the user wants a result spoken back, not a tab opened.
-    #   edge_search = opens the Edge browser and loads a search results page.
-    #                 Use ONLY when user explicitly asks to "open Edge", "browse to",
-    #                 "show me in the browser", or "open a new tab".
-    #   RULE: Default to web_search. Only use edge_search when user asks to
-    #         open a browser / tab explicitly.
-    tool_registry.register("web_search", _web_search_handler, risk=R.SAFE,
-                            description=(
-                                "Silent background web search — returns a spoken result, "
-                                "does NOT open any browser window. "
-                                "Use for: 'search for X', 'look up Y', 'what is Z'. "
-                                "PREFER THIS over edge_search unless user explicitly asks "
-                                "to open a browser tab."
-                            ),
-                            category="search")
     tool_registry.register("edge_search", _edge_search_handler, risk=R.SAFE,
                             description=(
                                 "Opens the Microsoft Edge browser and performs a visible search. "
                                 "Use ONLY when user explicitly says 'open Edge', 'browse to', "
-                                "'show me in the browser', or 'open a tab'. "
-                                "Do NOT use for silent/spoken-result searches — use web_search instead."
+                                "'show me in the browser', or 'open a tab'."
                             ),
                             category="search")
 
@@ -361,22 +311,11 @@ def _register_tools() -> None:
     tool_registry.register("process_manager",
         lambda args: process_manager(_act(args, "list"), **_kw(args)),
         risk=R.MEDIUM, description="List/kill system processes.", category="system")
-    tool_registry.register("startup_manager",
-        lambda args: startup_manager(_act(args, "list"), **_kw(args)),
-        risk=R.MEDIUM, description="Manage startup programs.", category="system")
-
     # ── System / settings ─────────────────────────────────────────────────────
 
     tool_registry.register("computer_settings",
         lambda args: computer_settings(_act(args), args.get("value", "")),
         risk=R.MEDIUM, description="Adjust system settings (volume, brightness, etc.)", category="system")
-    tool_registry.register("system_status",
-        lambda args: (lambda s: (
-            f"CPU: {s.get('cpu_percent','?')}%, "
-            f"RAM: {s.get('ram_percent','?')}%, "
-            f"Uptime: {s.get('uptime','?')}"
-        ))(get_system_status()),
-        risk=R.SAFE, description="Quick system metrics.", category="system")
     tool_registry.register("system_info",
         lambda args: system_info(_act(args, "overview"), **_kw(args)),
         risk=R.SAFE, description="Detailed system information.", category="system")
@@ -396,36 +335,18 @@ def _register_tools() -> None:
     tool_registry.register("advanced_automation",
         lambda args: advanced_automation(_act(args, "quick_action"), **_kw(args)),
         risk=R.HIGH, description="Advanced window/UI automation.", category="automation")
-    tool_registry.register("ui_automation",
-        lambda args: ui_automation(_act(args, "list"), **_kw(args)),
-        risk=R.MEDIUM, description="UI element inspection/interaction.", category="automation")
     tool_registry.register("keyboard_actions",
         lambda args: keyboard_actions(_act(args, "type"), **_kw(args)),
         risk=R.MEDIUM, description="Keyboard input actions.", category="automation")
     tool_registry.register("mouse_actions",
         lambda args: mouse_actions(_act(args, "click"), **_kw(args)),
         risk=R.MEDIUM, description="Mouse input actions.", category="automation")
-    def _self_awareness_handler(args):
-        act = (_act(args, "about") or "about").lower().strip()
-        return self_awareness(act, **_kw(args))
-
-    tool_registry.register("self_awareness", _self_awareness_handler,
-        risk=R.HIGH, description="Introspect and edit Gama's own source code/project.",
-        category="assistant")
-
-
 
     # ── Screen / camera ───────────────────────────────────────────────────────
 
-    tool_registry.register("edith_screen_vision",
-        lambda args: edith_analyze_screen(args.get("prompt", "What am I looking at?"), args.get("target_window_only", False)),
-        risk=R.SAFE, description="E.D.I.T.H. Tactical Vision Engine & OCR screen analysis.", category="vision")
     tool_registry.register("live_vision",
         lambda args: _live_vision_tool(args),
         risk=R.SAFE, description="Continuous Gemini Live desktop/camera vision stream.", category="vision")
-    tool_registry.register("webcam_process",
-        lambda args: webcam_process(args.get("prompt", "What do you see?")),
-        risk=R.SAFE, description="Describe webcam view.", category="vision")
     tool_registry.register("screen_agent",
         lambda args: screen_agent(_act(args, "visual_task"), **_kw(args)),
         risk=R.SAFE, description="Agent-driven screen analysis/action.", category="vision")
@@ -441,19 +362,6 @@ def _register_tools() -> None:
             max_chars=args.get("max_chars") or 120_000,
         ),
         risk=R.LOW, description="Read/process file content without opening windows.", category="files")
-    tool_registry.register("web_reader",
-        lambda args: web_reader(
-            url=args.get("url") or args.get("link") or "",
-            action=args.get("action", "read"),
-            mode=args.get("mode", "main_content"),
-            max_chars=args.get("max_chars") or 12_000,
-            use_playwright=bool(args.get("use_playwright") or args.get("playwright")),
-            show_on_nexus=bool(args.get("show_on_nexus") or args.get("on_nexus") or args.get("nexus")),
-            title=args.get("title") or "",
-        ),
-        risk=R.LOW,
-        description="Fetch and extract clean content from a weblink without opening a browser window.",
-        category="search")
     tool_registry.register("file_controller",
         lambda args: file_controller(_act(args), **_kw(args)),
         risk=R.MEDIUM, description="Create/move/delete files and folders.", category="files")
@@ -584,9 +492,6 @@ def _register_tools() -> None:
     tool_registry.register("reminder",
         lambda args: reminder(_act(args, "set"), **_kw(args)),
         risk=R.LOW, description="Set/list/cancel reminders.", category="productivity")
-    tool_registry.register("notes",
-        lambda args: notes(_act(args, "create"), **_kw(args)),
-        risk=R.LOW, description="Create/read/search notes.", category="productivity")
     tool_registry.register("goal_tracker",
         lambda args: goal_tracker(_act(args, "list"), **_kw(args)),
         risk=R.LOW, description="Track long-term goals.", category="productivity")
@@ -598,26 +503,12 @@ def _register_tools() -> None:
     tool_registry.register("class_schedule",
         lambda args: class_schedule(_act(args, "today"), **_kw(args)),
         risk=R.SAFE, description="Query the class timetable.", category="productivity")
-    tool_registry.register("session_restore",
-        lambda args: __import__("actions.session_restore", fromlist=["session_restore_action"]).session_restore_action(
-            action=args.get("action", "load"),
-            apps=args.get("apps") or None,
-        ),
-        risk=R.LOW, description="Save/restore open app sessions.", category="productivity")
+
     # ── Utilities ─────────────────────────────────────────────────────────────
 
     tool_registry.register("clipboard",
         lambda args: clipboard(_act(args, "read"), **_kw(args)),
         risk=R.LOW, description="Read/write clipboard and smart history.", category="utilities")
-    tool_registry.register("file_find",
-        lambda args: file_find(_act(args, "find"), **_kw(args)),
-        risk=R.LOW, description="Find and open files by name/intent.", category="files")
-    tool_registry.register("project_context",
-        lambda args: project_context_action(_act(args, "status"), **_kw(args)),
-        risk=R.LOW, description="Set/clear active project and DND.", category="productivity")
-    tool_registry.register("utilities",
-        lambda args: utilities(_act(args, "joke"), **_kw(args)),
-        risk=R.SAFE, description="Miscellaneous utilities (jokes, timers, etc.)", category="utilities")
     tool_registry.register("display_stage",
         lambda args: display_stage(_act(args, "show"), **_kw(args)),
         risk=R.SAFE,
@@ -640,11 +531,6 @@ def _register_tools() -> None:
         ),
         category="utilities")
 
-    tool_registry.register("canvas_visual",
-        lambda args: canvas_visual(_act(args, "generate"), **_kw(args)),
-        risk=R.SAFE,
-        description="Flash-Lite premium visual generator for complex JARVIS-style canvas HUDs.",
-        category="utilities")
     tool_registry.register("weather_action",
         lambda args: weather_action(args.get("city", ""), args.get("forecast", False)),
         risk=R.SAFE, description="Current weather / forecast.", category="utilities")
@@ -655,15 +541,22 @@ def _register_tools() -> None:
         risk=R.SAFE,
         description="Desktop / system notification controls (show, list, clear, on/off).",
         category="utilities")
-    tool_registry.register("desktop_notify",
-        lambda args: desktop_notify(_act(args, "status"), **_kw(args)),
-        risk=R.LOW, description="Desktop (OS) notifications.", category="utilities")
     tool_registry.register("sound_action",
         lambda args: _sound_action_handler(_act(args, "status"), **_kw(args)),
         risk=R.LOW, description="Test/configure GAMA's alert & UI sounds.", category="utilities")
     tool_registry.register("event_voice",
         lambda args: _event_voice_handler(_act(args, "status"), **_kw(args)),
         risk=R.LOW, description="Speak GAMA's own alert/success/failure events out loud.", category="utilities")
+    tool_registry.register("self_diagnostics",
+        lambda args: self_diagnostics(_act(args, "explain_last_error"), **_kw(args)),
+        risk=R.SAFE,
+        description="Read Gama's error logs in real-time and diagnose issues in natural human language.",
+        category="system")
+    tool_registry.register("self_repair",
+        lambda args: self_repair(_act(args, "read_code"), **_kw(args)),
+        risk=R.LOW,
+        description="Safe Code Self-Inspection, Editing, & On-Demand Repair.",
+        category="coding")
 
     # ── User settings (voice-configurable runtime toggles) ────────────────────
     # Handles: personality %, barge-in on/off, listening sensitivity,
@@ -843,15 +736,9 @@ def _register_tools() -> None:
     tool_registry.register("clipboard",
         lambda args: clipboard(_act(args, "read"), **_kw(args)),
         risk=R.LOW, description="Read/write clipboard and smart history.", category="utilities")
-    tool_registry.register("file_find",
-        lambda args: file_find(_act(args, "find"), **_kw(args)),
-        risk=R.LOW, description="Find and open files by name/intent.", category="files")
     tool_registry.register("project_context",
         lambda args: project_context_action(_act(args, "status"), **_kw(args)),
         risk=R.LOW, description="Set/clear active project and DND.", category="productivity")
-    tool_registry.register("utilities",
-        lambda args: utilities(_act(args, "joke"), **_kw(args)),
-        risk=R.SAFE, description="Miscellaneous utilities (jokes, timers, etc.)", category="utilities")
     tool_registry.register("display_stage",
         lambda args: display_stage(_act(args, "show"), **_kw(args)),
         risk=R.SAFE,

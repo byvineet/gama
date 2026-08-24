@@ -107,22 +107,6 @@ class AudioStreamController:
                 if len(asst._voice_buffer) > asst._voice_buffer_max_bytes:
                     del asst._voice_buffer[:len(asst._voice_buffer) - asst._voice_buffer_max_bytes]
 
-            # --- Prosody tracking (feature 4: emotional/tone detection) ---
-            # O(n) numpy stats only — see voice/emotion_detector.py. Never
-            # blocks or raises into this real-time callback.
-            # Fast mode (thin_mic_callback): skip — saves work every chunk.
-            _thin = False
-            try:
-                _p = getattr(asst, "_perf", None)
-                if _p is not None and getattr(_p, "thin_mic_callback", False):
-                    _thin = True
-            except Exception:
-                pass
-            if not _thin and asst._emotion_detector is not None:
-                try:
-                    asst._emotion_detector.feed_frame(clean_pcm)
-                except Exception:
-                    pass
 
             # Live mic amplitude → React waveform (noise-gated).
             # Background room noise must not drive the HUD; only real speech.

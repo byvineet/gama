@@ -47,6 +47,8 @@ export type SceneType =
   | "confirm"
   | "notification"
   | "image"
+  | "code"           // dynamic code view with syntax styling & line numbers
+  | "workflow"       // autonomous pipeline & file organization progress
   | "scene"          // composite container
   | "custom_svg"     // declarative SVG
   | "model_3d"       // parametric isometric 3D

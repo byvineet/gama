@@ -225,7 +225,7 @@ from actions.desktop_notify import (
     configure as configure_desktop_notify, desktop_notify,
 )
 from actions.calendar_action import calendar_action
-from actions import security   as security_gate
+from security import security_manager as security_gate
 from memory.memory_manager     import (
     update_memory, format_memory_for_prompt,
 )
@@ -1220,7 +1220,7 @@ class GamaAssistant(VoicePreferenceMixin, NotificationMixin):
 
     def _speak_exact(self, text: str, priority=None, kind: str = "prompt",
                       blocking: bool = False) -> None:
-        return self.live_session._speak_exact(text, priority, kind, blocking)
+        return self.live_session._speak_exact(text, priority=priority, kind=kind, blocking=blocking)
 
     def _enrollment_speak_sync(self, ui, text: str) -> None:
         return self.live_session._enrollment_speak_sync(ui, text)

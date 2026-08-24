@@ -1,0 +1,12 @@
+{
+  "timestamp": 1787113796.1312923,
+  "when": "2026-08-19 09:59:56",
+  "module": "main",
+  "exc_type": "ImportError",
+  "exc_message": "cannot import name 'LiveSession' from 'core.live_session' (C:\\Users\\notde\\Desktop\\Gama 2.0\\core\\live_session.py)",
+  "diagnosis": null,
+  "suggested_fix": null,
+  "matched_known_signature": false,
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import main; print('Main imported successfully'); from core.live_session import LiveSession; s = LiveSession(); print('LiveSession instantiated successfully')\n                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nImportError: cannot import name 'LiveSession' from 'core.live_session' (C:\\Users\\notde\\Desktop\\Gama 2.0\\core\\live_session.py). Did you mean: 'live_session'?\n",
+  "extra": {}
+}

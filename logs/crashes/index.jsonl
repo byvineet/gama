@@ -1,2 +1,5 @@
 {"timestamp": 1786377554.5661137, "module": "main", "exc_type": "SyntaxError", "matched": false, "path": "C:\\Users\\notde\\Desktop\\Gama 2.0\\logs\\crashes\\crash_20260810_212914_main.json"}
 {"timestamp": 1786885617.8356447, "module": "main", "exc_type": "ModuleNotFoundError", "matched": true, "path": "C:\\Users\\notde\\Desktop\\Gama 2.0\\logs\\crashes\\crash_20260816_183657_main.json"}
+{"timestamp": 1787113590.269932, "module": "main", "exc_type": "ModuleNotFoundError", "matched": true, "path": "C:\\Users\\notde\\Desktop\\Gama 2.0\\logs\\crashes\\crash_20260819_095630_main.json"}
+{"timestamp": 1787113796.1312923, "module": "main", "exc_type": "ImportError", "matched": false, "path": "C:\\Users\\notde\\Desktop\\Gama 2.0\\logs\\crashes\\crash_20260819_095956_main.json"}
+{"timestamp": 1787113832.1326873, "module": "main", "exc_type": "TypeError", "matched": false, "path": "C:\\Users\\notde\\Desktop\\Gama 2.0\\logs\\crashes\\crash_20260819_100032_main.json"}

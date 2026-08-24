@@ -34,6 +34,7 @@ _BLOCKING_TOOLS = frozenset({
     "set_confirmation_code",
     "process_manager",        # kill / kill_all
     "startup_manager",        # add/remove startup entries
+    "live_vision",            # camera/desktop snapshot must be captured & injected before model answers
 })
 
 
@@ -341,8 +342,8 @@ class ToolController:
         _action = str(args.get("action", "") or "").lower()
         _destructive_actions = {
             "shutdown", "restart", "reboot", "sleep", "hibernate", "lock",
-            "sign_out", "log_off", "format", "delete", "empty_recycle_bin",
-            "kill", "kill_all", "terminate", "install", "uninstall",
+            "sign_out", "log_off", "delete", "empty_recycle_bin",
+            "kill", "kill_all", "terminate",
             "add", "remove", "enable", "disable",
         }
         _needs_security = (
@@ -350,7 +351,7 @@ class ToolController:
         ) or any(k in (args or {}) for k in ("password", "passcode", "pin", "secret"))
         # Also escalate if free-text args contain destructive keywords
         _args_blob = " ".join(str(v).lower() for v in (args or {}).values() if isinstance(v, (str, int, float)))
-        if any(kw in _args_blob for kw in ("format c:", "del /s", "rm -rf", "diskpart", "reg delete")):
+        if any(kw in _args_blob for kw in ("del /s", "rm -rf", "diskpart", "reg delete")):
             _needs_security = True
 
         if not _needs_security:
@@ -488,7 +489,7 @@ class ToolController:
             "browser_control", "ui_automation", "protocol_engine",
             "keyboard_actions", "mouse_actions",
             "open_app", "file_processor", "web_reader",
-            "webcam_process", "screen_process", "live_vision", "email_sender",
+            "webcam_process", "screen_process", "email_sender",
             "telegram_sender",
         })
         _is_long = name in _LONG_RUNNING_TOOLS
@@ -737,7 +738,7 @@ class ToolController:
                 elif name == "canvas_visual":
                     _result = "Generating canvas visual."
                 elif name in ("desktop_context", "recall_memory", "memory_search",
-                              "get_world_context", "live_vision"):
+                              "get_world_context"):
                     _result = (
                         f"Fetching '{name}' in the background. "
                         "Use the result when it arrives; keep talking if needed."
